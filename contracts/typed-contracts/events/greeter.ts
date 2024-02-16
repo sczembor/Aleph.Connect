@@ -17,7 +17,7 @@ export default class EventsClass {
 		this.__api = api;
 	}
 
-	public subscribeOnGreetedEvent(callback : (event : EventTypes.Greeted) => void) {
+	public subscribeOnRandomEventEvent(callback : (event : EventTypes.RandomEvent) => void) {
 		const callbackWrapper = (args: any[], event: any) => {
 			const _event: Record < string, any > = {};
 
@@ -25,10 +25,10 @@ export default class EventsClass {
 				_event[event.args[i]!.name] = args[i]!.toJSON();
 			}
 
-			callback(handleEventReturn(_event, getEventTypeDescription('Greeted', EVENT_DATA_TYPE_DESCRIPTIONS)) as EventTypes.Greeted);
+			callback(handleEventReturn(_event, getEventTypeDescription('RandomEvent', EVENT_DATA_TYPE_DESCRIPTIONS)) as EventTypes.RandomEvent);
 		};
 
-		return this.__subscribeOnEvent(callbackWrapper, (eventName : string) => eventName == 'Greeted');
+		return this.__subscribeOnEvent(callbackWrapper, (eventName : string) => eventName == 'RandomEvent');
 	}
 
 

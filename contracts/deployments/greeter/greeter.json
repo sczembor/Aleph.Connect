@@ -1,8 +1,8 @@
 {
   "source": {
-    "hash": "0x1eb1e54e98c611573ce9b600b676e139c8766786395147f48b67f5331938bbb2",
+    "hash": "0xf5fcb021941ea27bb486a907e34bac502e6cd0071a23e35ccc1ffb488b2b774d",
     "language": "ink! 4.3.0",
-    "compiler": "rustc 1.74.0",
+    "compiler": "rustc 1.76.0",
     "build_info": {
       "build_mode": "Release",
       "cargo_contract_version": "3.2.0",
@@ -25,12 +25,39 @@
       {
         "args": [
           {
-            "label": "init_value",
+            "label": "admin",
             "type": {
               "displayName": [
-                "String"
+                "AccountId"
               ],
               "type": 0
+            }
+          },
+          {
+            "label": "mediator",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "label": "auction_deposit",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 4
+            }
+          },
+          {
+            "label": "offer_deposit",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 4
             }
           }
         ],
@@ -45,26 +72,9 @@
             "ink_primitives",
             "ConstructorResult"
           ],
-          "type": 1
+          "type": 9
         },
         "selector": "0x9bae9d5e"
-      },
-      {
-        "args": [],
-        "default": false,
-        "docs": [
-          "Creates a new greeter contract initialized to 'Hello ink!'."
-        ],
-        "label": "default",
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "ink_primitives",
-            "ConstructorResult"
-          ],
-          "type": 1
-        },
-        "selector": "0xed4b9d1b"
       }
     ],
     "docs": [],
@@ -73,38 +83,38 @@
         "displayName": [
           "AccountId"
         ],
-        "type": 6
+        "type": 0
       },
       "balance": {
         "displayName": [
           "Balance"
         ],
-        "type": 9
+        "type": 4
       },
       "blockNumber": {
         "displayName": [
           "BlockNumber"
         ],
-        "type": 12
+        "type": 19
       },
       "chainExtension": {
         "displayName": [
           "ChainExtension"
         ],
-        "type": 13
+        "type": 20
       },
       "hash": {
         "displayName": [
           "Hash"
         ],
-        "type": 10
+        "type": 18
       },
       "maxEventTopics": 4,
       "timestamp": {
         "displayName": [
           "Timestamp"
         ],
-        "type": 11
+        "type": 6
       }
     },
     "events": [
@@ -118,7 +128,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 5
+              "type": 17
             }
           },
           {
@@ -129,12 +139,12 @@
               "displayName": [
                 "String"
               ],
-              "type": 0
+              "type": 7
             }
           }
         ],
         "docs": [],
-        "label": "Greeted"
+        "label": "RandomEvent"
       }
     ],
     "lang_error": {
@@ -142,16 +152,69 @@
         "ink",
         "LangError"
       ],
-      "type": 3
+      "type": 11
     },
     "messages": [
+      {
+        "args": [
+          {
+            "label": "name",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 7
+            }
+          },
+          {
+            "label": "description",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 7
+            }
+          },
+          {
+            "label": "tags",
+            "type": {
+              "displayName": [
+                "Vec"
+              ],
+              "type": 8
+            }
+          },
+          {
+            "label": "duration",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "create_auction",
+        "mutates": true,
+        "payable": true,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 9
+        },
+        "selector": "0xd6cd59d7"
+      },
       {
         "args": [],
         "default": false,
         "docs": [
-          " Returns the current value of `message`."
+          " Returns the admin address."
         ],
-        "label": "greet",
+        "label": "admin",
         "mutates": false,
         "payable": false,
         "returnType": {
@@ -159,17 +222,61 @@
             "ink",
             "MessageResult"
           ],
-          "type": 4
+          "type": 12
         },
-        "selector": "0x052cda08"
+        "selector": "0x1aa66b39"
       },
       {
         "args": [
           {
-            "label": "new_value",
+            "label": "user",
             "type": {
               "displayName": [
-                "String"
+                "AccountId"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "user_auctions",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 13
+        },
+        "selector": "0xac963ca9"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [
+          " Returns the mediator address."
+        ],
+        "label": "mediator",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 12
+        },
+        "selector": "0xc78a6b9a"
+      },
+      {
+        "args": [
+          {
+            "label": "new_admin",
+            "type": {
+              "displayName": [
+                "AccountId"
               ],
               "type": 0
             }
@@ -177,9 +284,10 @@
         ],
         "default": false,
         "docs": [
-          " Sets `message` to the given value."
+          " Sets new admin.",
+          " Panics if caller not admin"
         ],
-        "label": "set_message",
+        "label": "set_admin",
         "mutates": true,
         "payable": false,
         "returnType": {
@@ -187,9 +295,35 @@
             "ink",
             "MessageResult"
           ],
-          "type": 1
+          "type": 9
         },
-        "selector": "0x1fe7426f"
+        "selector": "0x798dcad5"
+      },
+      {
+        "args": [
+          {
+            "label": "owner",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "balance_of",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 16
+        },
+        "selector": "0x0f755a56"
       }
     ]
   },
@@ -205,10 +339,185 @@
                   "ty": 0
                 }
               },
-              "name": "message"
+              "name": "admin"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 0
+                }
+              },
+              "name": "mediator"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 3
+                }
+              },
+              "name": "is_paused"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0x4d08e106",
+                      "ty": 4
+                    }
+                  },
+                  "root_key": "0x4d08e106"
+                }
+              },
+              "name": "balances"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0x44811269",
+                      "ty": 5
+                    }
+                  },
+                  "root_key": "0x44811269"
+                }
+              },
+              "name": "user_auctions"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x6c462cd8",
+                              "ty": 7
+                            }
+                          },
+                          "name": "name"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x6c462cd8",
+                              "ty": 7
+                            }
+                          },
+                          "name": "description"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x6c462cd8",
+                              "ty": 8
+                            }
+                          },
+                          "name": "tags"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x6c462cd8",
+                              "ty": 6
+                            }
+                          },
+                          "name": "duration"
+                        }
+                      ],
+                      "name": "Auction"
+                    }
+                  },
+                  "root_key": "0x6c462cd8"
+                }
+              },
+              "name": "auctions"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x680a4c3c",
+                              "ty": 0
+                            }
+                          },
+                          "name": "author"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x680a4c3c",
+                              "ty": 7
+                            }
+                          },
+                          "name": "description"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x680a4c3c",
+                              "ty": 6
+                            }
+                          },
+                          "name": "duration"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x680a4c3c",
+                              "ty": 4
+                            }
+                          },
+                          "name": "reward"
+                        }
+                      ],
+                      "name": "Offer"
+                    }
+                  },
+                  "root_key": "0x680a4c3c"
+                }
+              },
+              "name": "auction_offers"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 4
+                }
+              },
+              "name": "offer_deposit"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 4
+                }
+              },
+              "name": "auction_deposit"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 6
+                }
+              },
+              "name": "next_auction_id"
             }
           ],
-          "name": "Greeter"
+          "name": "AMarketplace"
         }
       },
       "root_key": "0x00000000"
@@ -219,12 +528,95 @@
       "id": 0,
       "type": {
         "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 1,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "AccountId"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "type": {
+        "def": {
+          "array": {
+            "len": 32,
+            "type": 2
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": {
+        "def": {
+          "primitive": "u8"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": {
+        "def": {
+          "primitive": "bool"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": {
+        "def": {
+          "primitive": "u128"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 6
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": {
+        "def": {
+          "primitive": "u64"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": {
+        "def": {
           "primitive": "str"
         }
       }
     },
     {
-      "id": 1,
+      "id": 8,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 7
+          }
+        }
+      }
+    },
+    {
+      "id": 9,
       "type": {
         "def": {
           "variant": {
@@ -232,7 +624,7 @@
               {
                 "fields": [
                   {
-                    "type": 2
+                    "type": 10
                   }
                 ],
                 "index": 0,
@@ -241,7 +633,7 @@
               {
                 "fields": [
                   {
-                    "type": 3
+                    "type": 11
                   }
                 ],
                 "index": 1,
@@ -253,11 +645,11 @@
         "params": [
           {
             "name": "T",
-            "type": 2
+            "type": 10
           },
           {
             "name": "E",
-            "type": 3
+            "type": 11
           }
         ],
         "path": [
@@ -266,7 +658,7 @@
       }
     },
     {
-      "id": 2,
+      "id": 10,
       "type": {
         "def": {
           "tuple": []
@@ -274,7 +666,7 @@
       }
     },
     {
-      "id": 3,
+      "id": 11,
       "type": {
         "def": {
           "variant": {
@@ -293,7 +685,7 @@
       }
     },
     {
-      "id": 4,
+      "id": 12,
       "type": {
         "def": {
           "variant": {
@@ -310,7 +702,7 @@
               {
                 "fields": [
                   {
-                    "type": 3
+                    "type": 11
                   }
                 ],
                 "index": 1,
@@ -326,7 +718,7 @@
           },
           {
             "name": "E",
-            "type": 3
+            "type": 11
           }
         ],
         "path": [
@@ -335,7 +727,137 @@
       }
     },
     {
-      "id": 5,
+      "id": 13,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 14
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 11
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 14
+          },
+          {
+            "name": "E",
+            "type": 11
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 15
+          }
+        }
+      }
+    },
+    {
+      "id": 15,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "name",
+                "type": 7,
+                "typeName": "String"
+              },
+              {
+                "name": "description",
+                "type": 7,
+                "typeName": "String"
+              },
+              {
+                "name": "tags",
+                "type": 8,
+                "typeName": "Vec<String>"
+              },
+              {
+                "name": "duration",
+                "type": 6,
+                "typeName": "u64"
+              }
+            ]
+          }
+        },
+        "path": [
+          "greeter",
+          "amarketplace",
+          "Auction"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 4
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 11
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 4
+          },
+          {
+            "name": "E",
+            "type": 11
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 17,
       "type": {
         "def": {
           "variant": {
@@ -347,7 +869,7 @@
               {
                 "fields": [
                   {
-                    "type": 6
+                    "type": 0
                   }
                 ],
                 "index": 1,
@@ -359,7 +881,7 @@
         "params": [
           {
             "name": "T",
-            "type": 6
+            "type": 0
           }
         ],
         "path": [
@@ -368,60 +890,13 @@
       }
     },
     {
-      "id": 6,
+      "id": 18,
       "type": {
         "def": {
           "composite": {
             "fields": [
               {
-                "type": 7,
-                "typeName": "[u8; 32]"
-              }
-            ]
-          }
-        },
-        "path": [
-          "ink_primitives",
-          "types",
-          "AccountId"
-        ]
-      }
-    },
-    {
-      "id": 7,
-      "type": {
-        "def": {
-          "array": {
-            "len": 32,
-            "type": 8
-          }
-        }
-      }
-    },
-    {
-      "id": 8,
-      "type": {
-        "def": {
-          "primitive": "u8"
-        }
-      }
-    },
-    {
-      "id": 9,
-      "type": {
-        "def": {
-          "primitive": "u128"
-        }
-      }
-    },
-    {
-      "id": 10,
-      "type": {
-        "def": {
-          "composite": {
-            "fields": [
-              {
-                "type": 7,
+                "type": 1,
                 "typeName": "[u8; 32]"
               }
             ]
@@ -435,15 +910,7 @@
       }
     },
     {
-      "id": 11,
-      "type": {
-        "def": {
-          "primitive": "u64"
-        }
-      }
-    },
-    {
-      "id": 12,
+      "id": 19,
       "type": {
         "def": {
           "primitive": "u32"
@@ -451,7 +918,7 @@
       }
     },
     {
-      "id": 13,
+      "id": 20,
       "type": {
         "def": {
           "variant": {}
