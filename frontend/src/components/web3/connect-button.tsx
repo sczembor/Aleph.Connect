@@ -68,6 +68,8 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
     ),
   ])
 
+  console.log(activeChain)
+
   // Connect Button
   if (!activeAccount)
     return (
