@@ -1,5 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 
+const ONE_HOUR: u64 = 3_600_000;
+
 #[ink::contract]
 mod amarketplace {
     use ink::prelude::string::String;
@@ -27,7 +29,8 @@ mod amarketplace {
         name: String,
         description: String,
         tags: Vec<String>,
-        duration: u64,
+        created_at: u64,
+        expires_at: u64,
     }
 
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
@@ -42,6 +45,20 @@ mod amarketplace {
         reward: Balance,
     }
 
+    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
+    )]
+    pub struct Config {
+        admin: AccountId,
+        mediator: AccountId,
+        auction_deposit: Balance,
+        offer_deposit: Balance,
+        auction_duration: u64,
+        accept_offer_duration: u64,
+    }
+
     #[ink(storage)]
     pub struct AMarketplace {
         admin: AccountId,
@@ -49,11 +66,16 @@ mod amarketplace {
         is_paused: bool,
         balances: Mapping<AccountId, Balance>,
         user_auctions: Mapping<AccountId, Vec<u64>>,
+        user_offers: Mapping<AccountId, Vec<u64>>,
         auctions: Mapping<u64, Auction>,
-        auction_offers: Mapping<u64, Offer>,
+        auction_offers: Mapping<u64, Vec<u64>>,
+        offers: Mapping<u64, Offer>,
         offer_deposit: Balance,
         auction_deposit: Balance,
         next_auction_id: u64,
+        next_offer_id: u64,
+        accept_offer_duration: u64,
+        auction_duration: u64,
     }
 
     impl AMarketplace {
@@ -64,6 +86,8 @@ mod amarketplace {
             mediator: AccountId,
             auction_deposit: Balance,
             offer_deposit: Balance,
+            accept_offer_duration: u64,
+            auction_duration: u64,
         ) -> Self {
             Self {
                 admin,
@@ -75,32 +99,70 @@ mod amarketplace {
                 auction_offers: Mapping::new(),
                 auctions: Mapping::new(),
                 user_auctions: Mapping::new(),
+                user_offers: Mapping::new(),
+                offers: Mapping::new(),
                 next_auction_id: 1,
+                next_offer_id: 1,
+                accept_offer_duration,
+                auction_duration,
             }
         }
 
         #[ink(message, payable)]
-        pub fn create_auction(
-            &mut self,
-            name: String,
-            description: String,
-            tags: Vec<String>,
-            duration: u64,
-        ) {
+        pub fn create_auction(&mut self, name: String, description: String, tags: Vec<String>) {
             let caller = self.env().caller();
+            let now = self.env().block_timestamp();
             let attached_deposit = self.env().transferred_value();
             assert_eq!(attached_deposit, self.auction_deposit, "wrong deposit");
             let auction = Auction {
                 name,
                 description,
                 tags,
-                duration,
+                created_at: now,
+                expires_at: now + self.auction_duration,
             };
             self.auctions.insert(self.next_auction_id.clone(), &auction);
             let mut user_auctions: Vec<u64> = self.user_auctions.get(caller).unwrap_or(Vec::new());
             user_auctions.push(self.next_auction_id.clone());
             self.user_auctions.insert(caller, &user_auctions);
             self.next_auction_id += 1;
+        }
+
+        #[ink(message)]
+        pub fn create_offer(
+            &mut self,
+            description: String,
+            duration: u64,
+            reward: Balance,
+            auction_id: u64,
+        ) {
+            //TODO: figure out how to handle storage deposit
+            let caller = self.env().caller();
+            let auction = Offer {
+                author: caller,
+                description,
+                duration,
+                reward,
+            };
+
+            assert!(
+                self.auctions.get(auction_id).is_some(),
+                "auction does not exist"
+            );
+
+            assert!(
+                self.auctions.get(auction_id).unwrap().expires_at > self.env().block_timestamp(),
+                "auction is expired"
+            );
+
+            self.offers.insert(self.next_offer_id, &auction);
+            let mut auction_offers = self.auction_offers.get(auction_id).unwrap_or(Vec::new());
+            auction_offers.push(self.next_offer_id);
+            self.auction_offers.insert(auction_id, &auction_offers);
+            let mut user_offers = self.user_offers.get(caller).unwrap_or(Vec::new());
+            user_offers.push(self.next_offer_id);
+            self.user_offers.insert(caller, &user_offers);
+            self.next_offer_id += 1;
         }
 
         /// Returns the admin address.
@@ -118,6 +180,15 @@ mod amarketplace {
             results
         }
 
+        #[ink(message)]
+        pub fn user_offers(&self, user: AccountId) -> Vec<Offer> {
+            let mut results: Vec<Offer> = Vec::new();
+            for i in self.user_offers.get(user).unwrap() {
+                results.push(self.offers.get(i).unwrap());
+            }
+            results
+        }
+
         /// Returns the mediator address.
         #[ink(message)]
         pub fn mediator(&self) -> AccountId {
@@ -129,7 +200,7 @@ mod amarketplace {
         }
 
         fn assert_not_paused(&self) {
-            assert!(!self.is_paused);
+            assert!(!self.is_paused, "contract is paused");
         }
 
         /// Sets new admin.
@@ -144,11 +215,6 @@ mod amarketplace {
         pub fn pause(&mut self) {
             self.assert_admin();
             self.is_paused = true;
-        }
-
-        #[ink(message)]
-        pub fn balance_of(&self, owner: AccountId) -> Balance {
-            self.balances.get(owner).unwrap_or_default()
         }
     }
 
@@ -189,7 +255,7 @@ mod amarketplace {
         fn setup() -> AMarketplace {
             let admin: ink::primitives::AccountId = get_default_test_accounts().alice;
             let mediator = get_default_test_accounts().bob;
-            AMarketplace::new(admin, mediator, 10 * AZERO, 15 * AZERO)
+            AMarketplace::new(admin, mediator, 10 * AZERO, 15 * AZERO, ONE_HOUR, ONE_HOUR)
         }
 
         #[ink::test]
@@ -219,16 +285,16 @@ mod amarketplace {
         }
 
         #[ink::test]
-        fn create_auction() {
+        fn flow1() {
             let frank: ink::primitives::AccountId = get_default_test_accounts().frank;
             let mut contract = setup();
             set_caller(frank);
             set_deposit(10 * AZERO);
+
             contract.create_auction(
                 "test name".to_string(),
                 "test description".to_string(),
                 vec!["test tag".to_string()],
-                ONE_HOUR,
             );
 
             let user_auctions = contract.user_auctions(frank);
@@ -236,6 +302,14 @@ mod amarketplace {
             assert_eq!(user_auctions[0].name, "test name");
             assert_eq!(user_auctions[0].description, "test description");
             assert_eq!(user_auctions[0].tags, vec!["test tag"]);
+
+            contract.create_offer("test description".to_string(), ONE_HOUR, 200 * AZERO, 1);
+
+            let user_offers = contract.user_offers(frank);
+            assert_eq!(user_offers.len(), 1);
+            assert_eq!(user_offers[0].reward, 200 * AZERO);
+            assert_eq!(user_offers[0].duration, ONE_HOUR);
+            assert_eq!(user_offers[0].description, "test description");
         }
     }
 }
