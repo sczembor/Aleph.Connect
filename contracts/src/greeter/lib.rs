@@ -31,6 +31,20 @@ mod amarketplace {
         tags: Vec<String>,
         created_at: u64,
         expires_at: u64,
+        status: AuctionStatus,
+    }
+
+    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
+    )]
+    pub enum AuctionStatus {
+        InProgress,
+        OfferAccepted,
+        JobAccepted,
+        Finalized,
+        Conflict,
     }
 
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
@@ -59,6 +73,14 @@ mod amarketplace {
         accept_offer_duration: u64,
     }
 
+    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
+    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+    pub enum AuctionError {
+        CallerNotFound,
+        Unauthorized,
+        AuctionNotFound,
+    }
+
     #[ink(storage)]
     pub struct AMarketplace {
         admin: AccountId,
@@ -76,6 +98,7 @@ mod amarketplace {
         next_offer_id: u64,
         accept_offer_duration: u64,
         auction_duration: u64,
+        auction_offer_status: Mapping<(u64, u64), AuctionStatus>,
     }
 
     impl AMarketplace {
@@ -105,6 +128,7 @@ mod amarketplace {
                 next_offer_id: 1,
                 accept_offer_duration,
                 auction_duration,
+                auction_offer_status: Mapping::new(),
             }
         }
 
@@ -120,12 +144,38 @@ mod amarketplace {
                 tags,
                 created_at: now,
                 expires_at: now + self.auction_duration,
+                status: AuctionStatus::InProgress,
             };
             self.auctions.insert(self.next_auction_id.clone(), &auction);
             let mut user_auctions: Vec<u64> = self.user_auctions.get(caller).unwrap_or(Vec::new());
             user_auctions.push(self.next_auction_id.clone());
             self.user_auctions.insert(caller, &user_auctions);
             self.next_auction_id += 1;
+        }
+
+        #[ink(message)]
+        pub fn accept_offer(&mut self, auction_id: u64, offer_id: u64) -> Result<(), AuctionError> {
+            let caller = self.env().caller();
+
+            match self.user_auctions.get(caller) {
+                Some(auction_ids) if auction_ids.iter().any(|id| *id == auction_id) => {
+                    let mut auction = self.auctions.get(auction_id).unwrap();
+                    assert!(
+                        auction.expires_at > self.env().block_timestamp(),
+                        "auction expired"
+                    );
+                    //TODO: check if the offer exists
+                    self.auction_offer_status
+                        .insert((auction_id, offer_id), &AuctionStatus::OfferAccepted);
+                    //TODO: add to the list for user to accept the job
+
+                    Ok(())
+                }
+                _ => Err(match self.user_auctions.get(caller) {
+                    None => AuctionError::CallerNotFound,
+                    Some(_) => AuctionError::AuctionNotFound,
+                }),
+            }
         }
 
         #[ink(message)]
@@ -187,6 +237,40 @@ mod amarketplace {
                 results.push(self.offers.get(i).unwrap());
             }
             results
+        }
+
+        #[ink(message)]
+        pub fn auction_offers(&self, auction_id: u64) -> Vec<Offer> {
+            let mut results: Vec<Offer> = Vec::new();
+            for i in self.auction_offers.get(auction_id).unwrap() {
+                results.push(self.offers.get(i).unwrap());
+            }
+            results
+        }
+
+        #[ink(message)]
+        // Function to get paginated auctions in reversed order
+        pub fn reversed_auctions(&self, from_index: u64, limit: u64) -> Vec<Auction> {
+            let start_index = if from_index >= self.next_auction_id {
+                self.next_auction_id - 1
+            } else {
+                from_index
+            };
+
+            let end_index = if start_index > limit {
+                start_index - limit
+            } else {
+                0
+            };
+
+            let mut auctions_to_return: Vec<Auction> = Vec::new();
+
+            for i in end_index + 1..=start_index {
+                let auction = self.auctions.get(&i).expect("Auction not found");
+                auctions_to_return.push(auction);
+            }
+            auctions_to_return.reverse();
+            auctions_to_return
         }
 
         /// Returns the mediator address.
