@@ -36,6 +36,39 @@ mod amarketplace {
         feature = "std",
         derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
     )]
+    pub struct AuctionView {
+        id: u64,
+        author: AccountId,
+        name: String,
+        description: String,
+        tags: Vec<String>,
+        created_at: u64,
+        expires_at: u64,
+        status: AuctionStatus,
+        accepted_offer: Option<u64>,
+    }
+
+    impl Auction {
+        pub fn get_view(&self, id: u64) -> AuctionView {
+            AuctionView {
+                id, // Assuming "id" field exists in Offer
+                author: self.author,
+                name: self.name.clone(),
+                description: self.description.clone(),
+                tags: self.tags.clone(),
+                created_at: self.created_at,
+                expires_at: self.expires_at,
+                status: self.status.clone(),
+                accepted_offer: self.accepted_offer,
+            }
+        }
+    }
+
+    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode, Clone)]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
+    )]
     pub enum AuctionStatus {
         InProgress,
         OfferAccepted,
@@ -51,6 +84,39 @@ mod amarketplace {
         derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
     )]
     pub struct Offer {
+        author: AccountId,
+        description: String,
+        duration: u64,
+        reward: Balance,
+        status: AuctionStatus,
+        accepted_at: Option<u64>,
+        started_at: Option<u64>,
+        delivered_at: Option<u64>,
+    }
+
+    impl Offer {
+        pub fn get_view(&self, id: u64) -> OfferView {
+            OfferView {
+                id, // Assuming "id" field exists in Offer
+                author: self.author,
+                description: self.description.clone(),
+                duration: self.duration,
+                reward: self.reward,
+                status: self.status.clone(),
+                accepted_at: self.accepted_at,
+                started_at: self.started_at,
+                delivered_at: self.delivered_at,
+            }
+        }
+    }
+
+    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
+    )]
+    pub struct OfferView {
+        id: u64,
         author: AccountId,
         description: String,
         duration: u64,
@@ -422,12 +488,12 @@ mod amarketplace {
         }
 
         #[ink(message)]
-        pub fn user_auctions(&self, user: AccountId) -> Vec<Auction> {
+        pub fn user_auctions(&self, user: AccountId) -> Vec<AuctionView> {
             let mut results = Vec::new();
-            if let Some(offer_ids) = self.user_auctions.get(user) {
-                for offer_id in offer_ids.iter() {
-                    if let Some(auction) = self.auctions.get(*offer_id) {
-                        results.push(auction);
+            if let Some(auction_ids) = self.user_auctions.get(user) {
+                for auction_id in auction_ids.iter() {
+                    if let Some(auction) = self.auctions.get(*auction_id) {
+                        results.push(auction.get_view(*auction_id));
                     }
                 }
             }
@@ -435,12 +501,12 @@ mod amarketplace {
         }
 
         #[ink(message)]
-        pub fn user_offers(&self, user: AccountId) -> Vec<Offer> {
+        pub fn user_offers(&self, user: AccountId) -> Vec<OfferView> {
             let mut results = Vec::new();
             if let Some(offer_ids) = self.user_offers.get(user) {
                 for offer_id in offer_ids.iter() {
                     if let Some(offer) = self.offers.get(*offer_id) {
-                        results.push(offer);
+                        results.push(offer.get_view(*offer_id));
                     }
                 }
             }
@@ -456,12 +522,12 @@ mod amarketplace {
         }
 
         #[ink(message)]
-        pub fn auction_offers(&self, auction_id: u64) -> Vec<Offer> {
+        pub fn auction_offers(&self, auction_id: u64) -> Vec<OfferView> {
             let mut results = Vec::new();
             if let Some(offer_ids) = self.auction_offers.get(auction_id) {
                 for offer_id in offer_ids.iter() {
                     if let Some(offer) = self.offers.get(*offer_id) {
-                        results.push(offer);
+                        results.push(offer.get_view(*offer_id));
                     }
                 }
             }
@@ -470,7 +536,7 @@ mod amarketplace {
 
         #[ink(message)]
         // Function to get paginated auctions in reversed order
-        pub fn reversed_auctions(&self, from_index: u64, limit: u64) -> Vec<Auction> {
+        pub fn reversed_auctions(&self, from_index: u64, limit: u64) -> Vec<AuctionView> {
             let start_index = if from_index >= self.next_auction_id {
                 self.next_auction_id - 1
             } else {
@@ -483,17 +549,32 @@ mod amarketplace {
                 0
             };
 
-            let mut auctions_to_return: Vec<Auction> = Vec::new();
+            let mut auctions_to_return: Vec<AuctionView> = Vec::new();
 
             for i in end_index + 1..=start_index {
                 let auction = self.auctions.get(&i).expect("Auction not found");
-                auctions_to_return.push(auction);
+                auctions_to_return.push(auction.get_view(i));
             }
             auctions_to_return.reverse();
             auctions_to_return
         }
 
-        /// Returns the mediator address.
+        #[ink(message)]
+        pub fn auction(&self, id: u64) -> Option<AuctionView> {
+            match self.auctions.get(id) {
+                Some(auction) => Some(auction.get_view(id)),
+                None => None,
+            }
+        }
+
+        #[ink(message)]
+        pub fn offer(&self, id: u64) -> Option<OfferView> {
+            match self.offers.get(id) {
+                Some(offer) => Some(offer.get_view(id)),
+                None => None,
+            }
+        }
+
         #[ink(message)]
         pub fn mediator(&self) -> AccountId {
             self.mediator
