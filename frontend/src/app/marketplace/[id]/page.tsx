@@ -1,4 +1,4 @@
-import { MarketplaceListItem } from '@/components/marketplace/marketplace-list-item'
+import { AuctionDetails } from '@/components/auction/auction-details'
 import { OfferListItem } from '@/components/offers/offer-list-item'
 import { SubmitOffer } from '@/components/submit-offer/submit-offer'
 
@@ -71,7 +71,7 @@ const offers = [
 export default function MarketplaceDetails() {
   return (
     <div className="flex flex-col gap-4">
-      <MarketplaceListItem {...auction} interactive={false} />
+      <AuctionDetails {...auction} interactive={false} />
       <div>
         <div className="mx-6 flex items-center gap-4">
           <h2 className="text-2xl font-semibold">Offers</h2>
@@ -82,7 +82,7 @@ export default function MarketplaceDetails() {
       <div>
         {!offers?.length && (
           <p className="ml-6 mt-4 w-full  text-muted-foreground">
-            No offers yet. You submit one using &quot;Submit offer&quot; button
+            No offers yet. You can submit one using &quot;Submit offer&quot; button
           </p>
         )}
         <div className="grid grid-cols-3 gap-4">

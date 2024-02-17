@@ -1,31 +1,36 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { PropsWithChildren } from 'react'
 
+import { Auction } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
 import { formatDistance } from 'date-fns'
 import { Calendar, Dumbbell } from 'lucide-react'
 
-import { MarketplaceListItemType } from '@/app/marketplace/page'
 import { Parameter } from '@/components/parameter/parameter'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export interface MarketplaceListItemProps extends MarketplaceListItemType {
+export interface AuctionDetailsProps extends Auction, PropsWithChildren {
+  endDate?: Date
+  difficulty?: 'HARD' | 'MEDIUM' | 'EASY'
   interactive?: boolean
+  hrefPrefix?: string
 }
 
-export function MarketplaceListItem({
-  id,
+export function AuctionDetails({
   name,
   tags,
-  endDate,
-  difficulty,
+  endDate = new Date(),
+  difficulty = 'MEDIUM',
   description,
   interactive = true,
-}: MarketplaceListItemProps) {
+  hrefPrefix = 'marketplace',
+  children,
+}: AuctionDetailsProps) {
   const router = useRouter()
   const redirectToAuctions = () => {
-    router.push(`marketplace/${id}`)
+    router.push(`${hrefPrefix}/${id}`)
   }
 
   return (
@@ -36,7 +41,7 @@ export function MarketplaceListItem({
       <CardHeader className="gap-3">
         <CardTitle className="flex flex-col gap-2">
           {name}
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto">
             {tags.map((tag) => (
               <Badge key={tag}>{tag}</Badge>
             ))}
@@ -46,8 +51,9 @@ export function MarketplaceListItem({
           <Parameter icon={Calendar} title="Ends in" value={formatDistance(new Date(), endDate)} />
           <Parameter icon={Dumbbell} title="Difficulty:" value={difficulty} />
         </div>
-        <CardDescription>{description}</CardDescription>
+        <CardDescription className="overflow-auto">{description}</CardDescription>
       </CardHeader>
+      {children}
     </Card>
   )
 }

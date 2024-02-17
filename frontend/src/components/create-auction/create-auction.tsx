@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { Plus } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -11,13 +13,11 @@ import {
 
 import { CreateAuctionForm } from './create-auction-form'
 
-interface CreateAuctionProps {
-  className?: string
-}
+export function CreateAuction() {
+  const [dialogOpen, setDialogOpen] = useState(false)
 
-export function CreateAuction({ className }: CreateAuctionProps) {
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button variant="secondary">
           <span className="flex items-center gap-2">
@@ -29,7 +29,7 @@ export function CreateAuction({ className }: CreateAuctionProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl">Create new auction</DialogTitle>
-          <CreateAuctionForm />
+          <CreateAuctionForm onSuccess={() => setDialogOpen(false)} />
         </DialogHeader>
       </DialogContent>
     </Dialog>

@@ -1,4 +1,4 @@
-import { Metadata, Viewport } from 'next'
+import { Viewport } from 'next'
 import { PropsWithChildren } from 'react'
 
 import { Analytics } from '@vercel/analytics/react'
@@ -19,30 +19,30 @@ export const viewport: Viewport = {
   colorScheme: 'dark',
 }
 
-export const metadata: Metadata = {
-  title: 'ink!athon Boilerplate',
-  description: 'Full-Stack DApp Boilerplate for ink! Smart Contracts',
-  metadataBase: new URL(env.url),
-  robots: env.isProduction ? 'all' : 'noindex,nofollow',
-  openGraph: {
-    type: 'website',
-    locale: 'en',
-    url: env.url,
-    siteName: 'ink!athon Boilerplate',
-    images: [
-      {
-        url: '/images/inkathon-og-banner.jpg',
-        width: 1280,
-        height: 640,
-      },
-    ],
-  },
-  twitter: {
-    site: '@scio_xyz',
-    creator: '@scio_xyz',
-    card: 'summary_large_image',
-  },
-}
+// export const metadata: Metadata = {
+//   title: 'ink!athon Boilerplate',
+//   description: 'Full-Stack DApp Boilerplate for ink! Smart Contracts',
+//   metadataBase: new URL(env.url),
+//   robots: env.isProduction ? 'all' : 'noindex,nofollow',
+//   openGraph: {
+//     type: 'website',
+//     locale: 'en',
+//     url: env.url,
+//     siteName: 'ink!athon Boilerplate',
+//     images: [
+//       {
+//         url: '/images/inkathon-og-banner.jpg',
+//         width: 1280,
+//         height: 640,
+//       },
+//     ],
+//   },
+//   twitter: {
+//     site: '@scio_xyz',
+//     creator: '@scio_xyz',
+//     card: 'summary_large_image',
+//   },
+// }
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (

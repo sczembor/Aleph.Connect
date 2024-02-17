@@ -1,13 +1,13 @@
 'use client'
 
-import { Check, HandCoins, Timer, X } from 'lucide-react'
+import { HandCoins, Timer } from 'lucide-react'
 
 import { cn } from '@/utils/cn'
 
+import { AcceptDenyFooter } from '../accept-deny-footer/accept-deny-footer'
 import { Parameter } from '../parameter/parameter'
 import { Badge } from '../ui/badge'
-import { Button } from '../ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 interface OfferListItemProps {
   authorName: string
@@ -16,15 +16,17 @@ interface OfferListItemProps {
   message: string
   status: 'WAITING' | 'ACCEPTED' | 'DENIED'
   className?: string
+  customHeader?: string
 }
 
 export function OfferListItem({
   className,
-  authorName,
+  authorName = '',
   estimation,
   reward,
   message,
   status,
+  customHeader,
 }: OfferListItemProps) {
   const isDenied = status === 'DENIED'
   const isAuctionOwner = true
@@ -38,7 +40,7 @@ export function OfferListItem({
     <Card className={cn(isDenied ? '!text-muted-foreground' : undefined, className)}>
       <CardHeader>
         <CardTitle className="flex flex-col gap-2">
-          {authorName}&apos;s offer
+          {customHeader || `${authorName}'s offer`}
           <div>
             <Badge variant={badgeVariant} className="uppercase">
               {status}
@@ -54,16 +56,7 @@ export function OfferListItem({
         <p className="text-sm text-muted-foreground">{message}</p>
       </CardContent>
       {isAuctionOwner && status === 'WAITING' && (
-        <CardFooter className="space-x-4">
-          <Button className="w-full" onClick={handleAcceptOffer}>
-            Accept
-            <Check className="ml-1" />
-          </Button>
-          <Button variant="secondary" className="w-full" onClick={handleDenyOffer}>
-            Deny
-            <X className="ml-1" />
-          </Button>
-        </CardFooter>
+        <AcceptDenyFooter onAccept={handleAcceptOffer} onDeny={handleDenyOffer} />
       )}
     </Card>
   )

@@ -2,8 +2,12 @@
 
 import { ChangeEvent } from 'react'
 
+import { ContractIds } from '@/deployments/deployments'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useInkathon, useRegisteredContract } from '@scio-labs/use-inkathon'
+import { useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -17,11 +21,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { contractTxWithToast } from '@/utils/contract-tx-with-toast'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 interface CreateAuctionFormProps {
   className?: string
+  onSuccess?: () => void
 }
 
 const createAuctionFormSchema = z.object({
@@ -33,7 +39,12 @@ const createAuctionFormSchema = z.object({
 
 type CreateAuctionFormValues = z.infer<typeof createAuctionFormSchema>
 
-export function CreateAuctionForm({ className }: CreateAuctionFormProps) {
+export function CreateAuctionForm({ onSuccess }: CreateAuctionFormProps) {
+  const { api, activeAccount, activeSigner } = useInkathon()
+  const { contract } = useRegisteredContract(ContractIds.AConnect)
+
+  const queryClient = useQueryClient()
+
   const form = useForm<CreateAuctionFormValues>({
     resolver: zodResolver(createAuctionFormSchema),
     defaultValues: {
@@ -44,10 +55,28 @@ export function CreateAuctionForm({ className }: CreateAuctionFormProps) {
     },
   })
 
-  const { register, reset, handleSubmit, watch, formState } = form
+  const { reset, handleSubmit } = form
 
-  const submitOffer = (values: CreateAuctionFormValues) => {
-    console.log(values)
+  const submitOffer = async ({ difficulty, ...values }: CreateAuctionFormValues) => {
+    if (!activeAccount || !contract || !activeSigner || !api) {
+      toast.error('Wallet not connected. Try again…')
+      return
+    }
+    try {
+      await contractTxWithToast(
+        api,
+        activeAccount.address,
+        contract,
+        'createAuction',
+        { value: 2000000000000 },
+        [values.name, values.description, values.tags],
+      )
+      reset()
+      await queryClient.invalidateQueries({ queryKey: ['auctions'] })
+      onSuccess?.()
+    } catch (err) {
+      console.warn(err)
+    }
   }
 
   const parseTags = (event: ChangeEvent<HTMLInputElement>, field: any) => {
