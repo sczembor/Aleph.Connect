@@ -4,6 +4,7 @@ const ONE_HOUR: u64 = 3_600_000;
 
 #[ink::contract]
 mod amarketplace {
+
     use ink::prelude::string::String;
     use ink::prelude::vec::Vec;
     use ink::storage::Mapping;
@@ -136,6 +137,21 @@ mod amarketplace {
                 auction_duration,
                 auction_offer_status: Mapping::new(),
             }
+        }
+
+        /// Creates a new greeter contract initialized to 'Hello ink!'.
+        #[ink(constructor)]
+        pub fn default() -> Self {
+            let admin: AccountId = [0u8; 32].into();
+            let mediator: AccountId = [0u8; 32].into();
+            Self::new(
+                admin,
+                mediator,
+                2 * 1_000_000_000_000,
+                1 * 1_000_000_000_000,
+                300_000,
+                600_000,
+            )
         }
 
         #[ink(message, payable)]
@@ -454,6 +470,10 @@ mod amarketplace {
             AMarketplace::new(admin, mediator, 10 * AZERO, 15 * AZERO, ONE_HOUR, ONE_HOUR)
         }
 
+        fn set_balance(account_id: AccountId, balance: Balance) {
+            ink::env::test::set_account_balance::<ink::env::DefaultEnvironment>(account_id, balance)
+        }
+
         #[ink::test]
         fn basics() {
             let admin: ink::primitives::AccountId = get_default_test_accounts().alice;
@@ -483,8 +503,11 @@ mod amarketplace {
         #[ink::test]
         fn flow1() {
             let frank: ink::primitives::AccountId = get_default_test_accounts().frank;
+            let django: ink::primitives::AccountId = get_default_test_accounts().django;
             let mut contract = setup();
             set_caller(frank);
+            set_balance(frank, 1000 * AZERO);
+            set_balance(django, 1000 * AZERO);
             set_deposit(10 * AZERO);
 
             println!("balance: {:?}", contract.balance());
@@ -501,17 +524,18 @@ mod amarketplace {
             assert_eq!(user_auctions[0].description, "test description");
             assert_eq!(user_auctions[0].tags, vec!["test tag"]);
 
+            set_caller(django);
             contract.create_offer("test description".to_string(), ONE_HOUR, 200 * AZERO, 1);
 
-            let user_offers = contract.user_offers(frank);
+            let user_offers = contract.user_offers(django);
             assert_eq!(user_offers.len(), 1);
             assert_eq!(user_offers[0].reward, 200 * AZERO);
             assert_eq!(user_offers[0].duration, ONE_HOUR);
             assert_eq!(user_offers[0].description, "test description");
 
             println!("balance: {:?}", contract.balance());
-            set_deposit(200 * AZERO);
-            // ink::env::pay_with_call!(contract.accept_offer(1, 1), 200 * AZERO);
+            set_caller(frank);
+            ink::env::pay_with_call!(contract.accept_offer(1, 1), 200 * AZERO);
             contract.accept_offer(1, 1);
             let user_auctions = contract.user_auctions(frank);
             assert_eq!(user_auctions.len(), 1);
@@ -523,20 +547,23 @@ mod amarketplace {
 
             println!("balance: {:?}", contract.balance());
 
+            set_caller(django);
             set_deposit(15 * AZERO);
-            contract.accept_job(1, 1);
+            ink::env::pay_with_call!(contract.accept_job(1, 1), 15 * AZERO);
             let user_auctions = contract.user_auctions(frank);
             assert_eq!(user_auctions[0].status, AuctionStatus::JobAccepted);
-            let user_offers = contract.user_offers(frank);
+            let user_offers = contract.user_offers(django);
             assert_eq!(user_offers[0].status, AuctionStatus::JobAccepted);
 
             contract.deliver_job(1, 1);
             let user_auctions = contract.user_auctions(frank);
             assert_eq!(user_auctions[0].status, AuctionStatus::JobDelivered);
 
+            println!("before acceptance balance: {:?}", contract.balance());
+            set_caller(frank);
             contract.confirm_job_delivery(1, 1, true);
+            println!("after acceptance balance: {:?}", contract.balance());
 
-            // assert!(contract.balance());
             let user_auctions = contract.user_auctions(frank);
             assert_eq!(user_auctions[0].status, AuctionStatus::Finalized);
         }
