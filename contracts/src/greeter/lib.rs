@@ -215,7 +215,9 @@ mod amarketplace {
             );
             auction.status = AuctionStatus::JobAccepted;
             offer.started_at = Some(now);
+            offer.status = AuctionStatus::JobAccepted;
             self.offers.insert(offer_id, &offer);
+            self.auctions.insert(auction_id, &auction);
         }
 
         #[ink(message)]
@@ -228,18 +230,20 @@ mod amarketplace {
             let mut offer = self.offers.get(offer_id).unwrap();
             assert!(offer.author == caller, "not autoher of the offer");
             assert!(
-                offer.status == AuctionStatus::OfferAccepted,
+                offer.status == AuctionStatus::JobAccepted,
                 "offer not accepted"
             );
             let mut auction = self.auctions.get(auction_id).unwrap();
-            assert!(auction.status == AuctionStatus::OfferAccepted);
+            assert!(auction.status == AuctionStatus::JobAccepted);
             assert!(
                 auction.accepted_offer == Some(offer_id),
                 "this offer was not accepted"
             );
             auction.status = AuctionStatus::JobDelivered;
-            offer.started_at = Some(now);
+            offer.delivered_at = Some(now);
+            offer.status = AuctionStatus::JobDelivered;
             self.offers.insert(offer_id, &offer);
+            self.auctions.insert(auction_id, &auction);
         }
 
         #[ink(message)]
@@ -399,6 +403,11 @@ mod amarketplace {
             self.admin = new_admin;
         }
 
+        #[ink(message)]
+        pub fn balance(&self) -> Balance {
+            self.env().balance()
+        }
+
         pub fn pause(&mut self) {
             self.assert_admin();
             self.is_paused = true;
@@ -478,6 +487,8 @@ mod amarketplace {
             set_caller(frank);
             set_deposit(10 * AZERO);
 
+            println!("balance: {:?}", contract.balance());
+
             contract.create_auction(
                 "test name".to_string(),
                 "test description".to_string(),
@@ -497,6 +508,37 @@ mod amarketplace {
             assert_eq!(user_offers[0].reward, 200 * AZERO);
             assert_eq!(user_offers[0].duration, ONE_HOUR);
             assert_eq!(user_offers[0].description, "test description");
+
+            println!("balance: {:?}", contract.balance());
+            set_deposit(200 * AZERO);
+            // ink::env::pay_with_call!(contract.accept_offer(1, 1), 200 * AZERO);
+            contract.accept_offer(1, 1);
+            let user_auctions = contract.user_auctions(frank);
+            assert_eq!(user_auctions.len(), 1);
+            assert_eq!(user_auctions[0].name, "test name");
+            assert_eq!(user_auctions[0].description, "test description");
+            assert_eq!(user_auctions[0].tags, vec!["test tag"]);
+            assert_eq!(user_auctions[0].accepted_offer, Some(1));
+            assert_eq!(user_auctions[0].status, AuctionStatus::OfferAccepted);
+
+            println!("balance: {:?}", contract.balance());
+
+            set_deposit(15 * AZERO);
+            contract.accept_job(1, 1);
+            let user_auctions = contract.user_auctions(frank);
+            assert_eq!(user_auctions[0].status, AuctionStatus::JobAccepted);
+            let user_offers = contract.user_offers(frank);
+            assert_eq!(user_offers[0].status, AuctionStatus::JobAccepted);
+
+            contract.deliver_job(1, 1);
+            let user_auctions = contract.user_auctions(frank);
+            assert_eq!(user_auctions[0].status, AuctionStatus::JobDelivered);
+
+            contract.confirm_job_delivery(1, 1, true);
+
+            // assert!(contract.balance());
+            let user_auctions = contract.user_auctions(frank);
+            assert_eq!(user_auctions[0].status, AuctionStatus::Finalized);
         }
 
         //TODO add full flow test
