@@ -1,3 +1,4 @@
+import { CreateAuction } from '@/components/create-auction/create-auction'
 import { MarketplaceListItem } from '@/components/marketplace/marketplace-list-item'
 import {
   Pagination,
@@ -63,6 +64,7 @@ export default function Marketplace() {
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
           <h1 className="text-3xl font-bold">Marketplace</h1>
+          <CreateAuction />
         </div>
         {/* TODO: Add filters */}
         <div className="grid grid-cols-2 gap-4">

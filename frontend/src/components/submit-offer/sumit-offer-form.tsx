@@ -49,15 +49,13 @@ export function SubmitOfferForm({ className }: SubmitOfferFormProps) {
             <FormItem>
               <FormLabel>Work time estimation (in hours)</FormLabel>
               <FormControl>
-                <div className="flex gap-2">
-                  <Input
-                    disabled={form.formState.isSubmitting}
-                    type="number"
-                    min={0}
-                    placeholder="40"
-                    {...field}
-                  />
-                </div>
+                <Input
+                  disabled={form.formState.isSubmitting}
+                  type="number"
+                  min={0}
+                  placeholder="40"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -71,9 +69,7 @@ export function SubmitOfferForm({ className }: SubmitOfferFormProps) {
               {/* TODO: better value picking */}
               <FormLabel>Reward</FormLabel>
               <FormControl>
-                <div className="flex gap-2">
-                  <Input disabled={form.formState.isSubmitting} type="number" {...field} />
-                </div>
+                <Input disabled={form.formState.isSubmitting} type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -86,9 +82,7 @@ export function SubmitOfferForm({ className }: SubmitOfferFormProps) {
             <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
-                <div className="flex gap-2">
-                  <Textarea disabled={form.formState.isSubmitting} {...field} />
-                </div>
+                <Textarea disabled={form.formState.isSubmitting} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
