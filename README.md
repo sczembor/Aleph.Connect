@@ -39,7 +39,7 @@ AlephConnect is a decentralized application (dApp) built on the AlephZero blockc
 
 **Getting Started:**
 
-1. **Set up your AlephZero wallet:** Install the AlephZero Node and create a wallet to interact with the blockchain.
+1. **Set up your AlephZero wallet:** Install wallet extension in your browser and create a wallet to interact with the blockchain.
 2. **Connect to the AlephConnect dApp:** Use your wallet to access the dApp interface.
 3. **Explore as an Employer:** Post projects, review freelancer offers, and manage agreements.
 4. **Explore as a Freelancer:** Browse projects, submit proposals, and work on accepted tasks.
