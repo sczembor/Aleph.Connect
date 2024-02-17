@@ -6,7 +6,8 @@ import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 
 import { ToastConfig } from '@/app/toast-config'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import { Navbar } from '@/components/navbar/navbar'
+import { Separator } from '@/components/ui/separator'
 import { env } from '@/config/environment'
 import { cn } from '@/utils/cn'
 
@@ -48,7 +49,11 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html lang="en" className={cn('dark', GeistSans.variable, GeistMono.variable)}>
       <body>
         <ClientProviders>
-          <TooltipProvider>{children}</TooltipProvider>
+          <div>
+            <Navbar />
+            <Separator />
+            <div className="px-20 py-12">{children}</div>
+          </div>
           <ToastConfig />
         </ClientProviders>
 

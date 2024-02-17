@@ -68,8 +68,6 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
     ),
   ])
 
-  console.log(activeChain)
-
   // Connect Button
   if (!activeAccount)
     return (
@@ -189,6 +187,15 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
               </DropdownMenuItem>
             )
           })}
+
+          {/* user navigation */}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <Link href="/offers">Your offers</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href="/auctions">Your auctions</Link>
+          </DropdownMenuItem>
 
           {/* Disconnect Button */}
           <DropdownMenuSeparator />
