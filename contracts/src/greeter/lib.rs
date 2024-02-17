@@ -15,23 +15,19 @@ mod amarketplace {
     }
 
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
-    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
-    pub enum Error {
-        InsufficientBalance,
-    }
-
-    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
     #[cfg_attr(
         feature = "std",
         derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
     )]
     pub struct Auction {
+        author: AccountId,
         name: String,
         description: String,
         tags: Vec<String>,
         created_at: u64,
         expires_at: u64,
         status: AuctionStatus,
+        accepted_offer: Option<u64>,
     }
 
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
@@ -43,6 +39,7 @@ mod amarketplace {
         InProgress,
         OfferAccepted,
         JobAccepted,
+        JobDelivered,
         Finalized,
         Conflict,
     }
@@ -57,7 +54,24 @@ mod amarketplace {
         description: String,
         duration: u64,
         reward: Balance,
+        status: AuctionStatus,
+        accepted_at: Option<u64>,
+        started_at: Option<u64>,
+        delivered_at: Option<u64>,
     }
+
+    /// Errors that can occur upon calling this contract.
+    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
+    #[cfg_attr(feature = "std", derive(::scale_info::TypeInfo))]
+    pub enum Error {
+        TransferFailed,
+        CallerNotFound,
+        Unauthorized,
+        AuctionNotFound,
+    }
+
+    /// Type alias for the contract's `Result` type.
+    pub type Result<T> = core::result::Result<T, Error>;
 
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
     #[cfg_attr(
@@ -71,14 +85,6 @@ mod amarketplace {
         offer_deposit: Balance,
         auction_duration: u64,
         accept_offer_duration: u64,
-    }
-
-    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
-    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
-    pub enum AuctionError {
-        CallerNotFound,
-        Unauthorized,
-        AuctionNotFound,
     }
 
     #[ink(storage)]
@@ -139,12 +145,14 @@ mod amarketplace {
             let attached_deposit = self.env().transferred_value();
             assert_eq!(attached_deposit, self.auction_deposit, "wrong deposit");
             let auction = Auction {
+                author: caller,
                 name,
                 description,
                 tags,
                 created_at: now,
                 expires_at: now + self.auction_duration,
                 status: AuctionStatus::InProgress,
+                accepted_offer: None,
             };
             self.auctions.insert(self.next_auction_id.clone(), &auction);
             let mut user_auctions: Vec<u64> = self.user_auctions.get(caller).unwrap_or(Vec::new());
@@ -153,9 +161,11 @@ mod amarketplace {
             self.next_auction_id += 1;
         }
 
-        #[ink(message)]
-        pub fn accept_offer(&mut self, auction_id: u64, offer_id: u64) -> Result<(), AuctionError> {
+        #[ink(message, payable)]
+        pub fn accept_offer(&mut self, auction_id: u64, offer_id: u64) -> Result<()> {
             let caller = self.env().caller();
+
+            let attached_deposit = self.env().transferred_value();
 
             match self.user_auctions.get(caller) {
                 Some(auction_ids) if auction_ids.iter().any(|id| *id == auction_id) => {
@@ -164,18 +174,107 @@ mod amarketplace {
                         auction.expires_at > self.env().block_timestamp(),
                         "auction expired"
                     );
-                    //TODO: check if the offer exists
+
+                    assert!(self.offers.contains(offer_id), "offer not found");
+                    let mut offer = self.offers.get(offer_id).unwrap();
+                    assert!(offer.reward == attached_deposit, "wrong deposit");
+                    offer.status = AuctionStatus::OfferAccepted;
                     self.auction_offer_status
                         .insert((auction_id, offer_id), &AuctionStatus::OfferAccepted);
-                    //TODO: add to the list for user to accept the job
-
+                    auction.status = AuctionStatus::OfferAccepted;
+                    self.offers.insert(offer_id, &offer);
+                    auction.accepted_offer = Some(offer_id);
+                    self.auctions.insert(auction_id, &auction);
                     Ok(())
                 }
                 _ => Err(match self.user_auctions.get(caller) {
-                    None => AuctionError::CallerNotFound,
-                    Some(_) => AuctionError::AuctionNotFound,
+                    None => Error::CallerNotFound,
+                    Some(_) => Error::AuctionNotFound,
                 }),
             }
+        }
+
+        #[ink(message, payable)]
+        pub fn accept_job(&mut self, auction_id: u64, offer_id: u64) {
+            let caller = self.env().caller();
+            let now = self.env().block_timestamp();
+            let attached_deposit = self.env().transferred_value();
+            assert_eq!(attached_deposit, self.offer_deposit, "wrong deposit");
+            assert!(self.offers.contains(offer_id), "offer not found");
+            let mut offer = self.offers.get(offer_id).unwrap();
+            assert!(offer.author == caller, "not autoher of the offer");
+            assert!(
+                offer.status == AuctionStatus::OfferAccepted,
+                "offer not accepted"
+            );
+            let mut auction = self.auctions.get(auction_id).unwrap();
+            assert!(auction.status == AuctionStatus::OfferAccepted);
+            assert!(
+                auction.accepted_offer == Some(offer_id),
+                "this offer was not accepted"
+            );
+            auction.status = AuctionStatus::JobAccepted;
+            offer.started_at = Some(now);
+            self.offers.insert(offer_id, &offer);
+        }
+
+        #[ink(message)]
+        pub fn deliver_job(&mut self, auction_id: u64, offer_id: u64) {
+            let caller = self.env().caller();
+            let now = self.env().block_timestamp();
+            let attached_deposit = self.env().transferred_value();
+            assert_eq!(attached_deposit, self.offer_deposit, "wrong deposit");
+            assert!(self.offers.contains(offer_id), "offer not found");
+            let mut offer = self.offers.get(offer_id).unwrap();
+            assert!(offer.author == caller, "not autoher of the offer");
+            assert!(
+                offer.status == AuctionStatus::OfferAccepted,
+                "offer not accepted"
+            );
+            let mut auction = self.auctions.get(auction_id).unwrap();
+            assert!(auction.status == AuctionStatus::OfferAccepted);
+            assert!(
+                auction.accepted_offer == Some(offer_id),
+                "this offer was not accepted"
+            );
+            auction.status = AuctionStatus::JobDelivered;
+            offer.started_at = Some(now);
+            self.offers.insert(offer_id, &offer);
+        }
+
+        #[ink(message)]
+        pub fn confirm_job_delivery(
+            &mut self,
+            auction_id: u64,
+            offer_id: u64,
+            completed: bool,
+        ) -> Result<()> {
+            let caller = self.env().caller();
+            let now = self.env().block_timestamp();
+            let offer = self.offers.get(offer_id);
+            let auction = self.auctions.get(auction_id);
+            assert!(offer.is_some(), "offer not found");
+            assert!(auction.is_some(), "auction not found");
+            let mut a = auction.unwrap();
+            let mut o = offer.unwrap();
+            assert!(a.author == caller, "not author of the auction");
+            assert!(
+                a.status == AuctionStatus::JobDelivered,
+                "offer not accepted"
+            );
+            assert!(
+                a.accepted_offer == Some(offer_id),
+                "this offer was not accepted"
+            );
+            a.status = AuctionStatus::Finalized;
+            o.status = AuctionStatus::Finalized;
+            o.delivered_at = Some(now);
+            self.auctions.insert(auction_id, &a);
+            self.offers.insert(offer_id, &o);
+            self.env()
+                .transfer(o.author, o.reward)
+                .map_err(|_| Error::TransferFailed)?;
+            Ok(())
         }
 
         #[ink(message)]
@@ -193,6 +292,10 @@ mod amarketplace {
                 description,
                 duration,
                 reward,
+                status: AuctionStatus::InProgress,
+                accepted_at: None,
+                started_at: None,
+                delivered_at: None,
             };
 
             assert!(
@@ -395,5 +498,7 @@ mod amarketplace {
             assert_eq!(user_offers[0].duration, ONE_HOUR);
             assert_eq!(user_offers[0].description, "test description");
         }
+
+        //TODO add full flow test
     }
 }
