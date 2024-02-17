@@ -217,6 +217,34 @@ export default class Methods {
 	}
 
 	/**
+	* auction
+	*
+	* @param { (number | string | BN) } id,
+	*/
+	"auction" (
+		id: (number | string | BN),
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "auction", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
+		}, [id], __options);
+	}
+
+	/**
+	* offer
+	*
+	* @param { (number | string | BN) } id,
+	*/
+	"offer" (
+		id: (number | string | BN),
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "offer", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
+		}, [id], __options);
+	}
+
+	/**
 	* mediator
 	*
 	*/

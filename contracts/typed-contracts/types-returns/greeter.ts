@@ -23,7 +23,8 @@ export enum Error {
 	auctionNotInJobDeliveredState = 'AuctionNotInJobDeliveredState'
 }
 
-export type Auction = {
+export type AuctionView = {
+	id: number,
 	author: AccountId,
 	name: string,
 	description: string,
@@ -43,7 +44,8 @@ export enum AuctionStatus {
 	conflict = 'Conflict'
 }
 
-export type Offer = {
+export type OfferView = {
+	id: number,
 	author: AccountId,
 	description: string,
 	duration: number,

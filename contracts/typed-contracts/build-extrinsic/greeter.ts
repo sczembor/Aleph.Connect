@@ -185,6 +185,30 @@ export default class Methods {
 	}
 
 	/**
+	 * auction
+	 *
+	 * @param { (number | string | BN) } id,
+	*/
+	"auction" (
+		id: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "auction", [id], __options);
+	}
+
+	/**
+	 * offer
+	 *
+	 * @param { (number | string | BN) } id,
+	*/
+	"offer" (
+		id: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "offer", [id], __options);
+	}
+
+	/**
 	 * mediator
 	 *
 	*/

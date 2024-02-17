@@ -142,12 +142,12 @@ export default class Methods {
 	* userAuctions
 	*
 	* @param { ArgumentTypes.AccountId } user,
-	* @returns { Result<Array<ReturnTypes.Auction>, ReturnTypes.LangError> }
+	* @returns { Result<Array<ReturnTypes.AuctionView>, ReturnTypes.LangError> }
 	*/
 	"userAuctions" (
 		user: ArgumentTypes.AccountId,
 		__options ? : GasLimit,
-	): Promise< QueryReturnType< Result<Array<ReturnTypes.Auction>, ReturnTypes.LangError> > >{
+	): Promise< QueryReturnType< Result<Array<ReturnTypes.AuctionView>, ReturnTypes.LangError> > >{
 		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "userAuctions", [user], __options , (result) => { return handleReturnType(result, getTypeDescription(16, DATA_TYPE_DESCRIPTIONS)); });
 	}
 
@@ -155,12 +155,12 @@ export default class Methods {
 	* userOffers
 	*
 	* @param { ArgumentTypes.AccountId } user,
-	* @returns { Result<Array<ReturnTypes.Offer>, ReturnTypes.LangError> }
+	* @returns { Result<Array<ReturnTypes.OfferView>, ReturnTypes.LangError> }
 	*/
 	"userOffers" (
 		user: ArgumentTypes.AccountId,
 		__options ? : GasLimit,
-	): Promise< QueryReturnType< Result<Array<ReturnTypes.Offer>, ReturnTypes.LangError> > >{
+	): Promise< QueryReturnType< Result<Array<ReturnTypes.OfferView>, ReturnTypes.LangError> > >{
 		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "userOffers", [user], __options , (result) => { return handleReturnType(result, getTypeDescription(21, DATA_TYPE_DESCRIPTIONS)); });
 	}
 
@@ -181,12 +181,12 @@ export default class Methods {
 	* auctionOffers
 	*
 	* @param { (number | string | BN) } auctionId,
-	* @returns { Result<Array<ReturnTypes.Offer>, ReturnTypes.LangError> }
+	* @returns { Result<Array<ReturnTypes.OfferView>, ReturnTypes.LangError> }
 	*/
 	"auctionOffers" (
 		auctionId: (number | string | BN),
 		__options ? : GasLimit,
-	): Promise< QueryReturnType< Result<Array<ReturnTypes.Offer>, ReturnTypes.LangError> > >{
+	): Promise< QueryReturnType< Result<Array<ReturnTypes.OfferView>, ReturnTypes.LangError> > >{
 		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "auctionOffers", [auctionId], __options , (result) => { return handleReturnType(result, getTypeDescription(21, DATA_TYPE_DESCRIPTIONS)); });
 	}
 
@@ -195,14 +195,40 @@ export default class Methods {
 	*
 	* @param { (number | string | BN) } fromIndex,
 	* @param { (number | string | BN) } limit,
-	* @returns { Result<Array<ReturnTypes.Auction>, ReturnTypes.LangError> }
+	* @returns { Result<Array<ReturnTypes.AuctionView>, ReturnTypes.LangError> }
 	*/
 	"reversedAuctions" (
 		fromIndex: (number | string | BN),
 		limit: (number | string | BN),
 		__options ? : GasLimit,
-	): Promise< QueryReturnType< Result<Array<ReturnTypes.Auction>, ReturnTypes.LangError> > >{
+	): Promise< QueryReturnType< Result<Array<ReturnTypes.AuctionView>, ReturnTypes.LangError> > >{
 		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "reversedAuctions", [fromIndex, limit], __options , (result) => { return handleReturnType(result, getTypeDescription(16, DATA_TYPE_DESCRIPTIONS)); });
+	}
+
+	/**
+	* auction
+	*
+	* @param { (number | string | BN) } id,
+	* @returns { Result<ReturnTypes.AuctionView | null, ReturnTypes.LangError> }
+	*/
+	"auction" (
+		id: (number | string | BN),
+		__options ? : GasLimit,
+	): Promise< QueryReturnType< Result<ReturnTypes.AuctionView | null, ReturnTypes.LangError> > >{
+		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "auction", [id], __options , (result) => { return handleReturnType(result, getTypeDescription(25, DATA_TYPE_DESCRIPTIONS)); });
+	}
+
+	/**
+	* offer
+	*
+	* @param { (number | string | BN) } id,
+	* @returns { Result<ReturnTypes.OfferView | null, ReturnTypes.LangError> }
+	*/
+	"offer" (
+		id: (number | string | BN),
+		__options ? : GasLimit,
+	): Promise< QueryReturnType< Result<ReturnTypes.OfferView | null, ReturnTypes.LangError> > >{
+		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "offer", [id], __options , (result) => { return handleReturnType(result, getTypeDescription(27, DATA_TYPE_DESCRIPTIONS)); });
 	}
 
 	/**
