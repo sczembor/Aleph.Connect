@@ -191,10 +191,10 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
           {/* user navigation */}
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Link href="/jobs">Your jobs</Link>
+            <Link href="/offers">Your jobs & offers</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/auctions">Your auctions</Link>
+            <Link href="/your-auctions">Your auctions</Link>
           </DropdownMenuItem>
 
           {/* Disconnect Button */}

@@ -7,8 +7,7 @@ import { env } from '@/config/environment'
  * DOCS: https://github.com/scio-labs/inkathon#2-custom-contracts
  */
 export enum ContractIds {
-  Greeter = 'greeter',
-  AConnect = '5FPmDxLWr9tXfwkmvP6KHtj2q4Qdf9j1xbLPyBZFBnEsDZhV',
+  AConnect = '5GQuS8KNCoPy1kCUUVP383C5iZVXu91Ur8gncTMJTne94q7a',
 }
 
 export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
@@ -30,10 +29,10 @@ export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
 
   return [
     {
-      contractId: '5FPmDxLWr9tXfwkmvP6KHtj2q4Qdf9j1xbLPyBZFBnEsDZhV',
+      contractId: ContractIds.AConnect,
       networkId: 'alephzero-testnet',
       abi,
-      address: '5FPmDxLWr9tXfwkmvP6KHtj2q4Qdf9j1xbLPyBZFBnEsDZhV',
+      address: ContractIds.AConnect,
     },
   ]
 }
