@@ -147,6 +147,18 @@ export default class Methods {
 	}
 
 	/**
+	 * getOfferReward
+	 *
+	 * @param { (number | string | BN) } offerId,
+	*/
+	"getOfferReward" (
+		offerId: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "getOfferReward", [offerId], __options);
+	}
+
+	/**
 	 * auctionOffers
 	 *
 	 * @param { (number | string | BN) } auctionId,

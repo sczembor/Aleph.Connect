@@ -173,6 +173,20 @@ export default class Methods {
 	}
 
 	/**
+	* getOfferReward
+	*
+	* @param { (number | string | BN) } offerId,
+	*/
+	"getOfferReward" (
+		offerId: (number | string | BN),
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "getOfferReward", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
+		}, [offerId], __options);
+	}
+
+	/**
 	* auctionOffers
 	*
 	* @param { (number | string | BN) } auctionId,

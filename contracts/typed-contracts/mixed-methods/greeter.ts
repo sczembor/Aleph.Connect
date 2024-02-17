@@ -185,6 +185,19 @@ export default class Methods {
 	}
 
 	/**
+	* getOfferReward
+	*
+	* @param { (number | string | BN) } offerId,
+	* @returns { Result<ReturnNumber, ReturnTypes.LangError> }
+	*/
+	"getOfferReward" (
+		offerId: (number | string | BN),
+		__options: GasLimit,
+	): Promise< QueryReturnType< Result<ReturnNumber, ReturnTypes.LangError> > >{
+		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "getOfferReward", [offerId], __options, (result) => { return handleReturnType(result, getTypeDescription(24, DATA_TYPE_DESCRIPTIONS)); });
+	}
+
+	/**
 	* auctionOffers
 	*
 	* @param { (number | string | BN) } auctionId,
