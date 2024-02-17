@@ -287,11 +287,6 @@ mod amarketplace {
         pub fn deliver_job(&mut self, auction_id: u64, offer_id: u64) -> Result<()> {
             let caller = self.env().caller();
             let now = self.env().block_timestamp();
-            let attached_deposit = self.env().transferred_value();
-
-            if attached_deposit != self.offer_deposit {
-                return Err(Error::WrongDeposit);
-            }
 
             if !self.offers.contains(offer_id) {
                 return Err(Error::OfferNotFound);
@@ -450,6 +445,14 @@ mod amarketplace {
                 }
             }
             results
+        }
+
+        #[ink(message)]
+        pub fn get_offer_reward(&self, offer_id: u64) -> Balance {
+            self.offers
+                .get(offer_id)
+                .map(|offer| offer.reward)
+                .unwrap_or(0)
         }
 
         #[ink(message)]
