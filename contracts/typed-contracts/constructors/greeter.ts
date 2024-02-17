@@ -27,12 +27,16 @@ export default class Constructors {
 	* @param { ArgumentTypes.AccountId } mediator,
 	* @param { (string | number | BN) } auctionDeposit,
 	* @param { (string | number | BN) } offerDeposit,
+	* @param { (number | string | BN) } acceptOfferDuration,
+	* @param { (number | string | BN) } auctionDuration,
 	*/
    	async "new" (
 		admin: ArgumentTypes.AccountId,
 		mediator: ArgumentTypes.AccountId,
 		auctionDeposit: (string | number | BN),
 		offerDeposit: (string | number | BN),
+		acceptOfferDuration: (number | string | BN),
+		auctionDuration: (number | string | BN),
 		__options ? : ConstructorOptions,
    	) {
    		const __contract = JSON.parse(ContractFile);
@@ -40,7 +44,35 @@ export default class Constructors {
 		const gasLimit = (await _genValidGasLimitAndValue(this.nativeAPI, __options)).gasLimit as WeightV2;
 
 		const storageDepositLimit = __options?.storageDepositLimit;
-			const tx = code.tx["new"]!({ gasLimit, storageDepositLimit, value: __options?.value }, admin, mediator, auctionDeposit, offerDeposit);
+			const tx = code.tx["new"]!({ gasLimit, storageDepositLimit, value: __options?.value }, admin, mediator, auctionDeposit, offerDeposit, acceptOfferDuration, auctionDuration);
+			let response;
+
+			try {
+				response = await _signAndSend(this.nativeAPI.registry, tx, this.signer, (event: any) => event);
+			}
+			catch (error) {
+				console.log(error);
+			}
+
+		return {
+			result: response as SignAndSendSuccessResponse,
+			// @ts-ignore
+			address: (response as SignAndSendSuccessResponse)!.result!.contract.address.toString(),
+		};
+	}
+	/**
+	* default
+	*
+	*/
+   	async "default" (
+		__options ? : ConstructorOptions,
+   	) {
+   		const __contract = JSON.parse(ContractFile);
+		const code = new CodePromise(this.nativeAPI, __contract, __contract.source.wasm);
+		const gasLimit = (await _genValidGasLimitAndValue(this.nativeAPI, __options)).gasLimit as WeightV2;
+
+		const storageDepositLimit = __options?.storageDepositLimit;
+			const tx = code.tx["default"]!({ gasLimit, storageDepositLimit, value: __options?.value }, );
 			let response;
 
 			try {

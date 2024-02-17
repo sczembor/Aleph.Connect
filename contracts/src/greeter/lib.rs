@@ -69,6 +69,15 @@ mod amarketplace {
         CallerNotFound,
         Unauthorized,
         AuctionNotFound,
+        AuctionExpired,
+        OfferNotFound,
+        WrongDeposit,
+        NotAuthorOfOffer,
+        NotAuthorOfAuction,
+        OfferNotAccepted,
+        AuctionNotInOfferAcceptedState,
+        OfferNotAcceptedForAuction,
+        AuctionNotInJobDeliveredState,
     }
 
     /// Type alias for the contract's `Result` type.
@@ -149,17 +158,26 @@ mod amarketplace {
                 mediator,
                 2 * 1_000_000_000_000,
                 1 * 1_000_000_000_000,
-                300_000,
-                600_000,
+                3000_000,
+                6000_000,
             )
         }
 
         #[ink(message, payable)]
-        pub fn create_auction(&mut self, name: String, description: String, tags: Vec<String>) {
+        pub fn create_auction(
+            &mut self,
+            name: String,
+            description: String,
+            tags: Vec<String>,
+        ) -> Result<()> {
             let caller = self.env().caller();
             let now = self.env().block_timestamp();
             let attached_deposit = self.env().transferred_value();
-            assert_eq!(attached_deposit, self.auction_deposit, "wrong deposit");
+
+            if attached_deposit != self.auction_deposit {
+                return Err(Error::WrongDeposit);
+            }
+
             let auction = Auction {
                 author: caller,
                 name,
@@ -170,30 +188,40 @@ mod amarketplace {
                 status: AuctionStatus::InProgress,
                 accepted_offer: None,
             };
+
             self.auctions.insert(self.next_auction_id.clone(), &auction);
             let mut user_auctions: Vec<u64> = self.user_auctions.get(caller).unwrap_or(Vec::new());
             user_auctions.push(self.next_auction_id.clone());
             self.user_auctions.insert(caller, &user_auctions);
             self.next_auction_id += 1;
+
+            Ok(())
         }
 
         #[ink(message, payable)]
         pub fn accept_offer(&mut self, auction_id: u64, offer_id: u64) -> Result<()> {
             let caller = self.env().caller();
-
             let attached_deposit = self.env().transferred_value();
 
             match self.user_auctions.get(caller) {
                 Some(auction_ids) if auction_ids.iter().any(|id| *id == auction_id) => {
-                    let mut auction = self.auctions.get(auction_id).unwrap();
-                    assert!(
-                        auction.expires_at > self.env().block_timestamp(),
-                        "auction expired"
-                    );
+                    let mut auction = self
+                        .auctions
+                        .get(auction_id)
+                        .ok_or(Error::AuctionNotFound)?;
+                    if auction.expires_at <= self.env().block_timestamp() {
+                        return Err(Error::AuctionExpired);
+                    }
 
-                    assert!(self.offers.contains(offer_id), "offer not found");
-                    let mut offer = self.offers.get(offer_id).unwrap();
-                    assert!(offer.reward == attached_deposit, "wrong deposit");
+                    if !self.offers.contains(offer_id) {
+                        return Err(Error::OfferNotFound);
+                    }
+
+                    let mut offer = self.offers.get(offer_id).ok_or(Error::OfferNotFound)?;
+                    if offer.reward != attached_deposit {
+                        return Err(Error::WrongDeposit);
+                    }
+
                     offer.status = AuctionStatus::OfferAccepted;
                     self.auction_offer_status
                         .insert((auction_id, offer_id), &AuctionStatus::OfferAccepted);
@@ -201,6 +229,7 @@ mod amarketplace {
                     self.offers.insert(offer_id, &offer);
                     auction.accepted_offer = Some(offer_id);
                     self.auctions.insert(auction_id, &auction);
+
                     Ok(())
                 }
                 _ => Err(match self.user_auctions.get(caller) {
@@ -211,55 +240,91 @@ mod amarketplace {
         }
 
         #[ink(message, payable)]
-        pub fn accept_job(&mut self, auction_id: u64, offer_id: u64) {
+        pub fn accept_job(&mut self, auction_id: u64, offer_id: u64) -> Result<()> {
             let caller = self.env().caller();
             let now = self.env().block_timestamp();
             let attached_deposit = self.env().transferred_value();
-            assert_eq!(attached_deposit, self.offer_deposit, "wrong deposit");
-            assert!(self.offers.contains(offer_id), "offer not found");
-            let mut offer = self.offers.get(offer_id).unwrap();
-            assert!(offer.author == caller, "not autoher of the offer");
-            assert!(
-                offer.status == AuctionStatus::OfferAccepted,
-                "offer not accepted"
-            );
-            let mut auction = self.auctions.get(auction_id).unwrap();
-            assert!(auction.status == AuctionStatus::OfferAccepted);
-            assert!(
-                auction.accepted_offer == Some(offer_id),
-                "this offer was not accepted"
-            );
+
+            if attached_deposit != self.offer_deposit {
+                return Err(Error::WrongDeposit);
+            }
+
+            if !self.offers.contains(offer_id) {
+                return Err(Error::OfferNotFound);
+            }
+
+            let mut offer = self.offers.get(offer_id).ok_or(Error::OfferNotFound)?;
+            if offer.author != caller {
+                return Err(Error::NotAuthorOfOffer);
+            }
+
+            if offer.status != AuctionStatus::OfferAccepted {
+                return Err(Error::OfferNotAccepted);
+            }
+
+            let mut auction = self
+                .auctions
+                .get(auction_id)
+                .ok_or(Error::AuctionNotFound)?;
+            if auction.status != AuctionStatus::OfferAccepted {
+                return Err(Error::AuctionNotInOfferAcceptedState);
+            }
+
+            if auction.accepted_offer != Some(offer_id) {
+                return Err(Error::OfferNotAcceptedForAuction);
+            }
+
             auction.status = AuctionStatus::JobAccepted;
             offer.started_at = Some(now);
             offer.status = AuctionStatus::JobAccepted;
             self.offers.insert(offer_id, &offer);
             self.auctions.insert(auction_id, &auction);
+
+            Ok(())
         }
 
         #[ink(message)]
-        pub fn deliver_job(&mut self, auction_id: u64, offer_id: u64) {
+        pub fn deliver_job(&mut self, auction_id: u64, offer_id: u64) -> Result<()> {
             let caller = self.env().caller();
             let now = self.env().block_timestamp();
             let attached_deposit = self.env().transferred_value();
-            assert_eq!(attached_deposit, self.offer_deposit, "wrong deposit");
-            assert!(self.offers.contains(offer_id), "offer not found");
-            let mut offer = self.offers.get(offer_id).unwrap();
-            assert!(offer.author == caller, "not autoher of the offer");
-            assert!(
-                offer.status == AuctionStatus::JobAccepted,
-                "offer not accepted"
-            );
-            let mut auction = self.auctions.get(auction_id).unwrap();
-            assert!(auction.status == AuctionStatus::JobAccepted);
-            assert!(
-                auction.accepted_offer == Some(offer_id),
-                "this offer was not accepted"
-            );
+
+            if attached_deposit != self.offer_deposit {
+                return Err(Error::WrongDeposit);
+            }
+
+            if !self.offers.contains(offer_id) {
+                return Err(Error::OfferNotFound);
+            }
+
+            let mut offer = self.offers.get(offer_id).ok_or(Error::OfferNotFound)?;
+            if offer.author != caller {
+                return Err(Error::NotAuthorOfOffer);
+            }
+
+            if offer.status != AuctionStatus::JobAccepted {
+                return Err(Error::OfferNotAccepted);
+            }
+
+            let mut auction = self
+                .auctions
+                .get(auction_id)
+                .ok_or(Error::AuctionNotFound)?;
+            if auction.status != AuctionStatus::JobAccepted {
+                return Err(Error::AuctionNotInOfferAcceptedState);
+            }
+
+            if auction.accepted_offer != Some(offer_id) {
+                return Err(Error::OfferNotAcceptedForAuction);
+            }
+
             auction.status = AuctionStatus::JobDelivered;
             offer.delivered_at = Some(now);
             offer.status = AuctionStatus::JobDelivered;
             self.offers.insert(offer_id, &offer);
             self.auctions.insert(auction_id, &auction);
+
+            Ok(())
         }
 
         #[ink(message)]
@@ -271,29 +336,36 @@ mod amarketplace {
         ) -> Result<()> {
             let caller = self.env().caller();
             let now = self.env().block_timestamp();
-            let offer = self.offers.get(offer_id);
-            let auction = self.auctions.get(auction_id);
-            assert!(offer.is_some(), "offer not found");
-            assert!(auction.is_some(), "auction not found");
-            let mut a = auction.unwrap();
-            let mut o = offer.unwrap();
-            assert!(a.author == caller, "not author of the auction");
-            assert!(
-                a.status == AuctionStatus::JobDelivered,
-                "offer not accepted"
-            );
-            assert!(
-                a.accepted_offer == Some(offer_id),
-                "this offer was not accepted"
-            );
-            a.status = AuctionStatus::Finalized;
-            o.status = AuctionStatus::Finalized;
-            o.delivered_at = Some(now);
-            self.auctions.insert(auction_id, &a);
-            self.offers.insert(offer_id, &o);
+
+            let mut offer = self.offers.get(offer_id).ok_or(Error::OfferNotFound)?;
+            let mut auction = self
+                .auctions
+                .get(auction_id)
+                .ok_or(Error::AuctionNotFound)?;
+
+            if auction.author != caller {
+                return Err(Error::NotAuthorOfAuction);
+            }
+
+            if auction.status != AuctionStatus::JobDelivered {
+                return Err(Error::AuctionNotInJobDeliveredState);
+            }
+
+            if auction.accepted_offer != Some(offer_id) {
+                return Err(Error::OfferNotAcceptedForAuction);
+            }
+
+            auction.status = AuctionStatus::Finalized;
+            offer.status = AuctionStatus::Finalized;
+            offer.delivered_at = Some(now);
+
+            self.auctions.insert(auction_id, &auction);
+            self.offers.insert(offer_id, &offer);
+
             self.env()
-                .transfer(o.author, o.reward)
+                .transfer(offer.author, offer.reward)
                 .map_err(|_| Error::TransferFailed)?;
+
             Ok(())
         }
 
@@ -304,10 +376,24 @@ mod amarketplace {
             duration: u64,
             reward: Balance,
             auction_id: u64,
-        ) {
-            //TODO: figure out how to handle storage deposit
+        ) -> Result<()> {
+            //TODO: Implement storage deposit handling
+
             let caller = self.env().caller();
-            let auction = Offer {
+
+            if !self.auctions.contains(auction_id) {
+                return Err(Error::AuctionNotFound);
+            }
+
+            let auction = self
+                .auctions
+                .get(auction_id)
+                .ok_or(Error::AuctionNotFound)?;
+            if auction.expires_at <= self.env().block_timestamp() {
+                return Err(Error::AuctionExpired);
+            }
+
+            let offer = Offer {
                 author: caller,
                 description,
                 duration,
@@ -318,24 +404,20 @@ mod amarketplace {
                 delivered_at: None,
             };
 
-            assert!(
-                self.auctions.get(auction_id).is_some(),
-                "auction does not exist"
-            );
+            self.offers.insert(self.next_offer_id, &offer);
 
-            assert!(
-                self.auctions.get(auction_id).unwrap().expires_at > self.env().block_timestamp(),
-                "auction is expired"
-            );
-
-            self.offers.insert(self.next_offer_id, &auction);
             let mut auction_offers = self.auction_offers.get(auction_id).unwrap_or(Vec::new());
             auction_offers.push(self.next_offer_id);
             self.auction_offers.insert(auction_id, &auction_offers);
-            let mut user_offers = self.user_offers.get(caller).unwrap_or(Vec::new());
+
+            // Update user_offers without using entry
+            let mut user_offers = self.user_offers.get(&caller).unwrap_or(Vec::new());
             user_offers.push(self.next_offer_id);
             self.user_offers.insert(caller, &user_offers);
+
             self.next_offer_id += 1;
+
+            Ok(())
         }
 
         /// Returns the admin address.
@@ -346,27 +428,39 @@ mod amarketplace {
 
         #[ink(message)]
         pub fn user_auctions(&self, user: AccountId) -> Vec<Auction> {
-            let mut results: Vec<Auction> = Vec::new();
-            for i in self.user_auctions.get(user).unwrap() {
-                results.push(self.auctions.get(i).unwrap());
+            let mut results = Vec::new();
+            if let Some(offer_ids) = self.user_auctions.get(user) {
+                for offer_id in offer_ids.iter() {
+                    if let Some(auction) = self.auctions.get(*offer_id) {
+                        results.push(auction);
+                    }
+                }
             }
             results
         }
 
         #[ink(message)]
         pub fn user_offers(&self, user: AccountId) -> Vec<Offer> {
-            let mut results: Vec<Offer> = Vec::new();
-            for i in self.user_offers.get(user).unwrap() {
-                results.push(self.offers.get(i).unwrap());
+            let mut results = Vec::new();
+            if let Some(offer_ids) = self.user_offers.get(user) {
+                for offer_id in offer_ids.iter() {
+                    if let Some(offer) = self.offers.get(*offer_id) {
+                        results.push(offer);
+                    }
+                }
             }
             results
         }
 
         #[ink(message)]
         pub fn auction_offers(&self, auction_id: u64) -> Vec<Offer> {
-            let mut results: Vec<Offer> = Vec::new();
-            for i in self.auction_offers.get(auction_id).unwrap() {
-                results.push(self.offers.get(i).unwrap());
+            let mut results = Vec::new();
+            if let Some(offer_ids) = self.auction_offers.get(auction_id) {
+                for offer_id in offer_ids.iter() {
+                    if let Some(offer) = self.offers.get(*offer_id) {
+                        results.push(offer);
+                    }
+                }
             }
             results
         }
@@ -479,6 +573,11 @@ mod amarketplace {
             let admin: ink::primitives::AccountId = get_default_test_accounts().alice;
             let contract = setup();
             assert_eq!(contract.admin(), admin);
+        }
+
+        #[ink::test]
+        fn default() {
+            AMarketplace::default();
         }
 
         #[ink::test]

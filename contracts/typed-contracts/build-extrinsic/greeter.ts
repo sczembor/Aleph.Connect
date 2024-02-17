@@ -26,16 +26,90 @@ export default class Methods {
 	 * @param { string } name,
 	 * @param { string } description,
 	 * @param { Array<string> } tags,
-	 * @param { (number | string | BN) } duration,
 	*/
 	"createAuction" (
 		name: string,
 		description: string,
 		tags: Array<string>,
-		duration: (number | string | BN),
 		__options: GasLimitAndRequiredValue,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "createAuction", [name, description, tags, duration], __options);
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "createAuction", [name, description, tags], __options);
+	}
+
+	/**
+	 * acceptOffer
+	 *
+	 * @param { (number | string | BN) } auctionId,
+	 * @param { (number | string | BN) } offerId,
+	*/
+	"acceptOffer" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		__options: GasLimitAndRequiredValue,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "acceptOffer", [auctionId, offerId], __options);
+	}
+
+	/**
+	 * acceptJob
+	 *
+	 * @param { (number | string | BN) } auctionId,
+	 * @param { (number | string | BN) } offerId,
+	*/
+	"acceptJob" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		__options: GasLimitAndRequiredValue,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "acceptJob", [auctionId, offerId], __options);
+	}
+
+	/**
+	 * deliverJob
+	 *
+	 * @param { (number | string | BN) } auctionId,
+	 * @param { (number | string | BN) } offerId,
+	*/
+	"deliverJob" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "deliverJob", [auctionId, offerId], __options);
+	}
+
+	/**
+	 * confirmJobDelivery
+	 *
+	 * @param { (number | string | BN) } auctionId,
+	 * @param { (number | string | BN) } offerId,
+	 * @param { boolean } completed,
+	*/
+	"confirmJobDelivery" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		completed: boolean,
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "confirmJobDelivery", [auctionId, offerId, completed], __options);
+	}
+
+	/**
+	 * createOffer
+	 *
+	 * @param { string } description,
+	 * @param { (number | string | BN) } duration,
+	 * @param { (string | number | BN) } reward,
+	 * @param { (number | string | BN) } auctionId,
+	*/
+	"createOffer" (
+		description: string,
+		duration: (number | string | BN),
+		reward: (string | number | BN),
+		auctionId: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "createOffer", [description, duration, reward, auctionId], __options);
 	}
 
 	/**
@@ -61,6 +135,44 @@ export default class Methods {
 	}
 
 	/**
+	 * userOffers
+	 *
+	 * @param { ArgumentTypes.AccountId } user,
+	*/
+	"userOffers" (
+		user: ArgumentTypes.AccountId,
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "userOffers", [user], __options);
+	}
+
+	/**
+	 * auctionOffers
+	 *
+	 * @param { (number | string | BN) } auctionId,
+	*/
+	"auctionOffers" (
+		auctionId: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "auctionOffers", [auctionId], __options);
+	}
+
+	/**
+	 * reversedAuctions
+	 *
+	 * @param { (number | string | BN) } fromIndex,
+	 * @param { (number | string | BN) } limit,
+	*/
+	"reversedAuctions" (
+		fromIndex: (number | string | BN),
+		limit: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "reversedAuctions", [fromIndex, limit], __options);
+	}
+
+	/**
 	 * mediator
 	 *
 	*/
@@ -83,15 +195,13 @@ export default class Methods {
 	}
 
 	/**
-	 * balanceOf
+	 * balance
 	 *
-	 * @param { ArgumentTypes.AccountId } owner,
 	*/
-	"balanceOf" (
-		owner: ArgumentTypes.AccountId,
+	"balance" (
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "balanceOf", [owner], __options);
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "balance", [], __options);
 	}
 
 }

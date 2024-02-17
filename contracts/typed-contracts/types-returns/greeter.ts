@@ -7,10 +7,50 @@ export enum LangError {
 	couldNotReadInput = 'CouldNotReadInput'
 }
 
+export enum Error {
+	transferFailed = 'TransferFailed',
+	callerNotFound = 'CallerNotFound',
+	unauthorized = 'Unauthorized',
+	auctionNotFound = 'AuctionNotFound',
+	auctionExpired = 'AuctionExpired',
+	offerNotFound = 'OfferNotFound',
+	wrongDeposit = 'WrongDeposit',
+	notAuthorOfOffer = 'NotAuthorOfOffer',
+	notAuthorOfAuction = 'NotAuthorOfAuction',
+	offerNotAccepted = 'OfferNotAccepted',
+	auctionNotInOfferAcceptedState = 'AuctionNotInOfferAcceptedState',
+	offerNotAcceptedForAuction = 'OfferNotAcceptedForAuction',
+	auctionNotInJobDeliveredState = 'AuctionNotInJobDeliveredState'
+}
+
 export type Auction = {
+	author: AccountId,
 	name: string,
 	description: string,
 	tags: Array<string>,
-	duration: number
+	createdAt: number,
+	expiresAt: number,
+	status: AuctionStatus,
+	acceptedOffer: number | null
+}
+
+export enum AuctionStatus {
+	inProgress = 'InProgress',
+	offerAccepted = 'OfferAccepted',
+	jobAccepted = 'JobAccepted',
+	jobDelivered = 'JobDelivered',
+	finalized = 'Finalized',
+	conflict = 'Conflict'
+}
+
+export type Offer = {
+	author: AccountId,
+	description: string,
+	duration: number,
+	reward: ReturnNumber,
+	status: AuctionStatus,
+	acceptedAt: number | null,
+	startedAt: number | null,
+	deliveredAt: number | null
 }
 

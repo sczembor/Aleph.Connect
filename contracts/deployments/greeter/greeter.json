@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0xf5fcb021941ea27bb486a907e34bac502e6cd0071a23e35ccc1ffb488b2b774d",
+    "hash": "0x1afa26f1fbf1a84b9a66219989ed70a12d3699c95eb4a2262b492dd69b575d0c",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.76.0",
     "build_info": {
@@ -59,6 +59,24 @@
               ],
               "type": 4
             }
+          },
+          {
+            "label": "accept_offer_duration",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "auction_duration",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
           }
         ],
         "default": false,
@@ -75,6 +93,23 @@
           "type": 9
         },
         "selector": "0x9bae9d5e"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [
+          "Creates a new greeter contract initialized to 'Hello ink!'."
+        ],
+        "label": "default",
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink_primitives",
+            "ConstructorResult"
+          ],
+          "type": 9
+        },
+        "selector": "0xed4b9d1b"
       }
     ],
     "docs": [],
@@ -95,19 +130,19 @@
         "displayName": [
           "BlockNumber"
         ],
-        "type": 19
+        "type": 27
       },
       "chainExtension": {
         "displayName": [
           "ChainExtension"
         ],
-        "type": 20
+        "type": 28
       },
       "hash": {
         "displayName": [
           "Hash"
         ],
-        "type": 18
+        "type": 26
       },
       "maxEventTopics": 4,
       "timestamp": {
@@ -128,7 +163,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 17
+              "type": 25
             }
           },
           {
@@ -183,15 +218,6 @@
               ],
               "type": 8
             }
-          },
-          {
-            "label": "duration",
-            "type": {
-              "displayName": [
-                "u64"
-              ],
-              "type": 6
-            }
           }
         ],
         "default": false,
@@ -204,9 +230,211 @@
             "ink",
             "MessageResult"
           ],
-          "type": 9
+          "type": 12
         },
         "selector": "0xd6cd59d7"
+      },
+      {
+        "args": [
+          {
+            "label": "auction_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "offer_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "accept_offer",
+        "mutates": true,
+        "payable": true,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 12
+        },
+        "selector": "0x00cf33d5"
+      },
+      {
+        "args": [
+          {
+            "label": "auction_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "offer_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "accept_job",
+        "mutates": true,
+        "payable": true,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 12
+        },
+        "selector": "0xf2991d41"
+      },
+      {
+        "args": [
+          {
+            "label": "auction_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "offer_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "deliver_job",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 12
+        },
+        "selector": "0x666798b6"
+      },
+      {
+        "args": [
+          {
+            "label": "auction_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "offer_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "completed",
+            "type": {
+              "displayName": [
+                "bool"
+              ],
+              "type": 3
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "confirm_job_delivery",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 12
+        },
+        "selector": "0xbd2b9735"
+      },
+      {
+        "args": [
+          {
+            "label": "description",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 7
+            }
+          },
+          {
+            "label": "duration",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "reward",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 4
+            }
+          },
+          {
+            "label": "auction_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "create_offer",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 12
+        },
+        "selector": "0x7f170b70"
       },
       {
         "args": [],
@@ -222,7 +450,7 @@
             "ink",
             "MessageResult"
           ],
-          "type": 12
+          "type": 15
         },
         "selector": "0x1aa66b39"
       },
@@ -248,9 +476,96 @@
             "ink",
             "MessageResult"
           ],
-          "type": 13
+          "type": 16
         },
         "selector": "0xac963ca9"
+      },
+      {
+        "args": [
+          {
+            "label": "user",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "user_offers",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 21
+        },
+        "selector": "0xa7c01bbc"
+      },
+      {
+        "args": [
+          {
+            "label": "auction_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "auction_offers",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 21
+        },
+        "selector": "0xa059b6c1"
+      },
+      {
+        "args": [
+          {
+            "label": "from_index",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "limit",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "reversed_auctions",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 16
+        },
+        "selector": "0x132fdc02"
       },
       {
         "args": [],
@@ -266,7 +581,7 @@
             "ink",
             "MessageResult"
           ],
-          "type": 12
+          "type": 15
         },
         "selector": "0xc78a6b9a"
       },
@@ -300,20 +615,10 @@
         "selector": "0x798dcad5"
       },
       {
-        "args": [
-          {
-            "label": "owner",
-            "type": {
-              "displayName": [
-                "AccountId"
-              ],
-              "type": 0
-            }
-          }
-        ],
+        "args": [],
         "default": false,
         "docs": [],
-        "label": "balance_of",
+        "label": "balance",
         "mutates": false,
         "payable": false,
         "returnType": {
@@ -321,9 +626,9 @@
             "ink",
             "MessageResult"
           ],
-          "type": 16
+          "type": 24
         },
-        "selector": "0x0f755a56"
+        "selector": "0xb48c1684"
       }
     ]
   },
@@ -391,8 +696,31 @@
               "layout": {
                 "root": {
                   "layout": {
+                    "leaf": {
+                      "key": "0x1b24cb3c",
+                      "ty": 5
+                    }
+                  },
+                  "root_key": "0x1b24cb3c"
+                }
+              },
+              "name": "user_offers"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
                     "struct": {
                       "fields": [
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x6c462cd8",
+                              "ty": 0
+                            }
+                          },
+                          "name": "author"
+                        },
                         {
                           "layout": {
                             "leaf": {
@@ -427,7 +755,80 @@
                               "ty": 6
                             }
                           },
-                          "name": "duration"
+                          "name": "created_at"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x6c462cd8",
+                              "ty": 6
+                            }
+                          },
+                          "name": "expires_at"
+                        },
+                        {
+                          "layout": {
+                            "enum": {
+                              "dispatchKey": "0x6c462cd8",
+                              "name": "AuctionStatus",
+                              "variants": {
+                                "0": {
+                                  "fields": [],
+                                  "name": "InProgress"
+                                },
+                                "1": {
+                                  "fields": [],
+                                  "name": "OfferAccepted"
+                                },
+                                "2": {
+                                  "fields": [],
+                                  "name": "JobAccepted"
+                                },
+                                "3": {
+                                  "fields": [],
+                                  "name": "JobDelivered"
+                                },
+                                "4": {
+                                  "fields": [],
+                                  "name": "Finalized"
+                                },
+                                "5": {
+                                  "fields": [],
+                                  "name": "Conflict"
+                                }
+                              }
+                            }
+                          },
+                          "name": "status"
+                        },
+                        {
+                          "layout": {
+                            "enum": {
+                              "dispatchKey": "0x6c462cd8",
+                              "name": "Option",
+                              "variants": {
+                                "0": {
+                                  "fields": [],
+                                  "name": "None"
+                                },
+                                "1": {
+                                  "fields": [
+                                    {
+                                      "layout": {
+                                        "leaf": {
+                                          "key": "0x6c462cd8",
+                                          "ty": 6
+                                        }
+                                      },
+                                      "name": "0"
+                                    }
+                                  ],
+                                  "name": "Some"
+                                }
+                              }
+                            }
+                          },
+                          "name": "accepted_offer"
                         }
                       ],
                       "name": "Auction"
@@ -442,12 +843,26 @@
               "layout": {
                 "root": {
                   "layout": {
+                    "leaf": {
+                      "key": "0x680a4c3c",
+                      "ty": 5
+                    }
+                  },
+                  "root_key": "0x680a4c3c"
+                }
+              },
+              "name": "auction_offers"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
                     "struct": {
                       "fields": [
                         {
                           "layout": {
                             "leaf": {
-                              "key": "0x680a4c3c",
+                              "key": "0x0bd8a2d5",
                               "ty": 0
                             }
                           },
@@ -456,7 +871,7 @@
                         {
                           "layout": {
                             "leaf": {
-                              "key": "0x680a4c3c",
+                              "key": "0x0bd8a2d5",
                               "ty": 7
                             }
                           },
@@ -465,7 +880,7 @@
                         {
                           "layout": {
                             "leaf": {
-                              "key": "0x680a4c3c",
+                              "key": "0x0bd8a2d5",
                               "ty": 6
                             }
                           },
@@ -474,20 +889,142 @@
                         {
                           "layout": {
                             "leaf": {
-                              "key": "0x680a4c3c",
+                              "key": "0x0bd8a2d5",
                               "ty": 4
                             }
                           },
                           "name": "reward"
+                        },
+                        {
+                          "layout": {
+                            "enum": {
+                              "dispatchKey": "0x0bd8a2d5",
+                              "name": "AuctionStatus",
+                              "variants": {
+                                "0": {
+                                  "fields": [],
+                                  "name": "InProgress"
+                                },
+                                "1": {
+                                  "fields": [],
+                                  "name": "OfferAccepted"
+                                },
+                                "2": {
+                                  "fields": [],
+                                  "name": "JobAccepted"
+                                },
+                                "3": {
+                                  "fields": [],
+                                  "name": "JobDelivered"
+                                },
+                                "4": {
+                                  "fields": [],
+                                  "name": "Finalized"
+                                },
+                                "5": {
+                                  "fields": [],
+                                  "name": "Conflict"
+                                }
+                              }
+                            }
+                          },
+                          "name": "status"
+                        },
+                        {
+                          "layout": {
+                            "enum": {
+                              "dispatchKey": "0x0bd8a2d5",
+                              "name": "Option",
+                              "variants": {
+                                "0": {
+                                  "fields": [],
+                                  "name": "None"
+                                },
+                                "1": {
+                                  "fields": [
+                                    {
+                                      "layout": {
+                                        "leaf": {
+                                          "key": "0x0bd8a2d5",
+                                          "ty": 6
+                                        }
+                                      },
+                                      "name": "0"
+                                    }
+                                  ],
+                                  "name": "Some"
+                                }
+                              }
+                            }
+                          },
+                          "name": "accepted_at"
+                        },
+                        {
+                          "layout": {
+                            "enum": {
+                              "dispatchKey": "0x0bd8a2d5",
+                              "name": "Option",
+                              "variants": {
+                                "0": {
+                                  "fields": [],
+                                  "name": "None"
+                                },
+                                "1": {
+                                  "fields": [
+                                    {
+                                      "layout": {
+                                        "leaf": {
+                                          "key": "0x0bd8a2d5",
+                                          "ty": 6
+                                        }
+                                      },
+                                      "name": "0"
+                                    }
+                                  ],
+                                  "name": "Some"
+                                }
+                              }
+                            }
+                          },
+                          "name": "started_at"
+                        },
+                        {
+                          "layout": {
+                            "enum": {
+                              "dispatchKey": "0x0bd8a2d5",
+                              "name": "Option",
+                              "variants": {
+                                "0": {
+                                  "fields": [],
+                                  "name": "None"
+                                },
+                                "1": {
+                                  "fields": [
+                                    {
+                                      "layout": {
+                                        "leaf": {
+                                          "key": "0x0bd8a2d5",
+                                          "ty": 6
+                                        }
+                                      },
+                                      "name": "0"
+                                    }
+                                  ],
+                                  "name": "Some"
+                                }
+                              }
+                            }
+                          },
+                          "name": "delivered_at"
                         }
                       ],
                       "name": "Offer"
                     }
                   },
-                  "root_key": "0x680a4c3c"
+                  "root_key": "0x0bd8a2d5"
                 }
               },
-              "name": "auction_offers"
+              "name": "offers"
             },
             {
               "layout": {
@@ -515,6 +1052,73 @@
                 }
               },
               "name": "next_auction_id"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 6
+                }
+              },
+              "name": "next_offer_id"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 6
+                }
+              },
+              "name": "accept_offer_duration"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 6
+                }
+              },
+              "name": "auction_duration"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "enum": {
+                      "dispatchKey": "0x7c771f90",
+                      "name": "AuctionStatus",
+                      "variants": {
+                        "0": {
+                          "fields": [],
+                          "name": "InProgress"
+                        },
+                        "1": {
+                          "fields": [],
+                          "name": "OfferAccepted"
+                        },
+                        "2": {
+                          "fields": [],
+                          "name": "JobAccepted"
+                        },
+                        "3": {
+                          "fields": [],
+                          "name": "JobDelivered"
+                        },
+                        "4": {
+                          "fields": [],
+                          "name": "Finalized"
+                        },
+                        "5": {
+                          "fields": [],
+                          "name": "Conflict"
+                        }
+                      }
+                    }
+                  },
+                  "root_key": "0x7c771f90"
+                }
+              },
+              "name": "auction_offer_status"
             }
           ],
           "name": "AMarketplace"
@@ -693,6 +1297,158 @@
               {
                 "fields": [
                   {
+                    "type": 13
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 11
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 13
+          },
+          {
+            "name": "E",
+            "type": 11
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 14
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 10
+          },
+          {
+            "name": "E",
+            "type": 14
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "TransferFailed"
+              },
+              {
+                "index": 1,
+                "name": "CallerNotFound"
+              },
+              {
+                "index": 2,
+                "name": "Unauthorized"
+              },
+              {
+                "index": 3,
+                "name": "AuctionNotFound"
+              },
+              {
+                "index": 4,
+                "name": "AuctionExpired"
+              },
+              {
+                "index": 5,
+                "name": "OfferNotFound"
+              },
+              {
+                "index": 6,
+                "name": "WrongDeposit"
+              },
+              {
+                "index": 7,
+                "name": "NotAuthorOfOffer"
+              },
+              {
+                "index": 8,
+                "name": "NotAuthorOfAuction"
+              },
+              {
+                "index": 9,
+                "name": "OfferNotAccepted"
+              },
+              {
+                "index": 10,
+                "name": "AuctionNotInOfferAcceptedState"
+              },
+              {
+                "index": 11,
+                "name": "OfferNotAcceptedForAuction"
+              },
+              {
+                "index": 12,
+                "name": "AuctionNotInJobDeliveredState"
+              }
+            ]
+          }
+        },
+        "path": [
+          "greeter",
+          "amarketplace",
+          "Error"
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
                     "type": 0
                   }
                 ],
@@ -727,7 +1483,7 @@
       }
     },
     {
-      "id": 13,
+      "id": 16,
       "type": {
         "def": {
           "variant": {
@@ -735,7 +1491,7 @@
               {
                 "fields": [
                   {
-                    "type": 14
+                    "type": 17
                   }
                 ],
                 "index": 0,
@@ -756,7 +1512,7 @@
         "params": [
           {
             "name": "T",
-            "type": 14
+            "type": 17
           },
           {
             "name": "E",
@@ -769,21 +1525,26 @@
       }
     },
     {
-      "id": 14,
+      "id": 17,
       "type": {
         "def": {
           "sequence": {
-            "type": 15
+            "type": 18
           }
         }
       }
     },
     {
-      "id": 15,
+      "id": 18,
       "type": {
         "def": {
           "composite": {
             "fields": [
+              {
+                "name": "author",
+                "type": 0,
+                "typeName": "AccountId"
+              },
               {
                 "name": "name",
                 "type": 7,
@@ -800,9 +1561,24 @@
                 "typeName": "Vec<String>"
               },
               {
-                "name": "duration",
+                "name": "created_at",
                 "type": 6,
                 "typeName": "u64"
+              },
+              {
+                "name": "expires_at",
+                "type": 6,
+                "typeName": "u64"
+              },
+              {
+                "name": "status",
+                "type": 19,
+                "typeName": "AuctionStatus"
+              },
+              {
+                "name": "accepted_offer",
+                "type": 20,
+                "typeName": "Option<u64>"
               }
             ]
           }
@@ -815,7 +1591,188 @@
       }
     },
     {
-      "id": 16,
+      "id": 19,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "InProgress"
+              },
+              {
+                "index": 1,
+                "name": "OfferAccepted"
+              },
+              {
+                "index": 2,
+                "name": "JobAccepted"
+              },
+              {
+                "index": 3,
+                "name": "JobDelivered"
+              },
+              {
+                "index": 4,
+                "name": "Finalized"
+              },
+              {
+                "index": 5,
+                "name": "Conflict"
+              }
+            ]
+          }
+        },
+        "path": [
+          "greeter",
+          "amarketplace",
+          "AuctionStatus"
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "None"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 6
+                  }
+                ],
+                "index": 1,
+                "name": "Some"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 6
+          }
+        ],
+        "path": [
+          "Option"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 22
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 11
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 22
+          },
+          {
+            "name": "E",
+            "type": 11
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 23
+          }
+        }
+      }
+    },
+    {
+      "id": 23,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "author",
+                "type": 0,
+                "typeName": "AccountId"
+              },
+              {
+                "name": "description",
+                "type": 7,
+                "typeName": "String"
+              },
+              {
+                "name": "duration",
+                "type": 6,
+                "typeName": "u64"
+              },
+              {
+                "name": "reward",
+                "type": 4,
+                "typeName": "Balance"
+              },
+              {
+                "name": "status",
+                "type": 19,
+                "typeName": "AuctionStatus"
+              },
+              {
+                "name": "accepted_at",
+                "type": 20,
+                "typeName": "Option<u64>"
+              },
+              {
+                "name": "started_at",
+                "type": 20,
+                "typeName": "Option<u64>"
+              },
+              {
+                "name": "delivered_at",
+                "type": 20,
+                "typeName": "Option<u64>"
+              }
+            ]
+          }
+        },
+        "path": [
+          "greeter",
+          "amarketplace",
+          "Offer"
+        ]
+      }
+    },
+    {
+      "id": 24,
       "type": {
         "def": {
           "variant": {
@@ -857,7 +1814,7 @@
       }
     },
     {
-      "id": 17,
+      "id": 25,
       "type": {
         "def": {
           "variant": {
@@ -890,7 +1847,7 @@
       }
     },
     {
-      "id": 18,
+      "id": 26,
       "type": {
         "def": {
           "composite": {
@@ -910,7 +1867,7 @@
       }
     },
     {
-      "id": 19,
+      "id": 27,
       "type": {
         "def": {
           "primitive": "u32"
@@ -918,7 +1875,7 @@
       }
     },
     {
-      "id": 20,
+      "id": 28,
       "type": {
         "def": {
           "variant": {}
