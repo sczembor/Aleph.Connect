@@ -68,7 +68,7 @@ const offers = [
   },
 ] as const
 
-export default function MarketplaceDetails() {
+export default function AuctionDetailsPage() {
   return (
     <div className="flex flex-col gap-4">
       <AuctionDetails {...auction} interactive={false} />

@@ -1,6 +1,6 @@
 import { Link } from 'lucide-react'
 
-import { MarketplaceListItemType } from '@/app/marketplace/page'
+import { MarketplaceListItemType } from '@/app/auctions/page'
 import { AuctionDetails } from '@/components/auction/auction-details'
 import { OfferListItem } from '@/components/offers/offer-list-item'
 import { Button } from '@/components/ui/button'
@@ -34,7 +34,7 @@ const offer = {
   },
 }
 
-export default function MarketplaceDetails() {
+export default function JobDetails() {
   return (
     <div className="flex flex-col gap-4">
       <AuctionDetails {...auction} hrefPrefix="/marketplace">

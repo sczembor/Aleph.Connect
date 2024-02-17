@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export interface AuctionDetailsProps extends Auction, PropsWithChildren {
+  id: string
   endDate?: Date
   difficulty?: 'HARD' | 'MEDIUM' | 'EASY'
   interactive?: boolean
@@ -19,13 +20,14 @@ export interface AuctionDetailsProps extends Auction, PropsWithChildren {
 }
 
 export function AuctionDetails({
+  id,
   name,
   tags,
   endDate = new Date(),
   difficulty = 'MEDIUM',
   description,
   interactive = true,
-  hrefPrefix = 'marketplace',
+  hrefPrefix = 'auctions',
   children,
 }: AuctionDetailsProps) {
   const router = useRouter()

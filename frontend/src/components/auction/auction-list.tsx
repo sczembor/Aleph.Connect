@@ -1,4 +1,4 @@
-import { useAuctions } from '@/api/useAuctions'
+import { Auction } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
 
 import {
   Pagination,
@@ -13,10 +13,12 @@ import {
 import { Skeleton } from '../ui/skeleton'
 import { AuctionDetails } from './auction-details'
 
-export function AuctionList() {
-  const { data, isLoading } = useAuctions(10, 10)
-  const items = data || []
+interface AuctionListProps {
+  items: Auction[]
+  isLoading?: boolean
+}
 
+export function AuctionList({ items, isLoading }: AuctionListProps) {
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
