@@ -2,6 +2,7 @@
 
 import { ChangeEvent } from 'react'
 
+import { TZERO_MULTIPLIER } from '@/constants/tzero-multiplier'
 import { ContractIds } from '@/deployments/deployments'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useInkathon, useRegisteredContract } from '@scio-labs/use-inkathon'
@@ -68,7 +69,7 @@ export function CreateAuctionForm({ onSuccess }: CreateAuctionFormProps) {
         activeAccount.address,
         contract,
         'createAuction',
-        { value: 2000000000000 },
+        { value: 2 * TZERO_MULTIPLIER },
         [values.name, values.description, values.tags],
       )
       reset()

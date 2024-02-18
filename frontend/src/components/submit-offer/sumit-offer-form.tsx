@@ -1,7 +1,12 @@
 'use client'
 
+import { TZERO_MULTIPLIER } from '@/constants/tzero-multiplier'
+import { ContractIds } from '@/deployments/deployments'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useInkathon, useRegisteredContract } from '@scio-labs/use-inkathon'
+import { useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -15,9 +20,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { contractTxWithToast } from '@/utils/contract-tx-with-toast'
 
 interface SubmitOfferFormProps {
   className?: string
+  onSuccess?: () => void
+  auctionId: string
 }
 
 const submitOfferFormSchema = z.object({
@@ -28,15 +36,36 @@ const submitOfferFormSchema = z.object({
 
 type SubmitOfferFormValues = z.infer<typeof submitOfferFormSchema>
 
-export function SubmitOfferForm({ className }: SubmitOfferFormProps) {
+export function SubmitOfferForm({ onSuccess, auctionId }: SubmitOfferFormProps) {
+  const { api, activeAccount, activeSigner } = useInkathon()
+  const { contract } = useRegisteredContract(ContractIds.AConnect)
+
+  const queryClient = useQueryClient()
+
   const form = useForm<SubmitOfferFormValues>({
     resolver: zodResolver(submitOfferFormSchema),
   })
 
-  const { register, reset, handleSubmit, watch, formState } = form
+  const { reset, handleSubmit } = form
 
-  const submitOffer = (values: SubmitOfferFormValues) => {
-    console.log(values)
+  const submitOffer = async (values: SubmitOfferFormValues) => {
+    if (!activeAccount || !contract || !activeSigner || !api) {
+      toast.error('Wallet not connected. Try again…')
+      return
+    }
+    try {
+      await contractTxWithToast(api, activeAccount.address, contract, 'createOffer', {}, [
+        values.message,
+        values.estimation,
+        values.reward * TZERO_MULTIPLIER,
+        auctionId,
+      ])
+      reset()
+      await queryClient.invalidateQueries({ queryKey: ['offers'] })
+      onSuccess?.()
+    } catch (err) {
+      console.warn(err)
+    }
   }
 
   return (
@@ -67,7 +96,7 @@ export function SubmitOfferForm({ className }: SubmitOfferFormProps) {
           render={({ field }) => (
             <FormItem>
               {/* TODO: better value picking */}
-              <FormLabel>Reward</FormLabel>
+              <FormLabel>Reward (in TZERO)</FormLabel>
               <FormControl>
                 <Input disabled={form.formState.isSubmitting} type="number" {...field} />
               </FormControl>
