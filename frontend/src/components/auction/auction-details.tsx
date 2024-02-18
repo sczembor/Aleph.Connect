@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 
-import { Auction } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
+import { AuctionView } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
 import { formatDistance } from 'date-fns'
 import { Calendar, Dumbbell } from 'lucide-react'
 
@@ -11,8 +11,7 @@ import { Parameter } from '@/components/parameter/parameter'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export interface AuctionDetailsProps extends Auction, PropsWithChildren {
-  id: string
+export interface AuctionDetailsProps extends AuctionView, PropsWithChildren {
   endDate?: Date
   difficulty?: 'HARD' | 'MEDIUM' | 'EASY'
   interactive?: boolean
@@ -22,7 +21,7 @@ export interface AuctionDetailsProps extends Auction, PropsWithChildren {
 export function AuctionDetails({
   id,
   name,
-  tags,
+  tags = [],
   endDate = new Date(),
   difficulty = 'MEDIUM',
   description,

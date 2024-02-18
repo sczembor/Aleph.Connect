@@ -24,10 +24,10 @@ export default function Auctions() {
     <>
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
-          <h1 className="text-3xl font-bold">Marketplace</h1>
+          <h1 className="text-3xl font-bold">Pending auctions</h1>
           <CreateAuction />
         </div>
-        <AuctionList items={items} isLoading={isLoading} />
+        {!!items?.length && <AuctionList items={items} isLoading={isLoading} />}
       </div>
     </>
   )

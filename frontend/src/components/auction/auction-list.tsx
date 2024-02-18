@@ -1,4 +1,4 @@
-import { Auction } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
+import { AuctionView } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
 
 import {
   Pagination,
@@ -14,11 +14,11 @@ import { Skeleton } from '../ui/skeleton'
 import { AuctionDetails } from './auction-details'
 
 interface AuctionListProps {
-  items: Auction[]
+  items: AuctionView[]
   isLoading?: boolean
 }
 
-export function AuctionList({ items, isLoading }: AuctionListProps) {
+export function AuctionList({ items = [], isLoading }: AuctionListProps) {
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
@@ -40,9 +40,7 @@ export function AuctionList({ items, isLoading }: AuctionListProps) {
                 No auctions yet. You can submit one using &quot;Create auction&quot; button
               </p>
             )}
-            {items.map((item) => (
-              <AuctionDetails key={item.name} {...item} />
-            ))}
+            {items?.map((item) => <AuctionDetails key={item.name} {...item} />)}
           </>
         )}
       </div>

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { Plus } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -13,11 +15,14 @@ import { SubmitOfferForm } from './sumit-offer-form'
 
 interface SubmitOfferProps {
   className?: string
+  auctionId: string
 }
 
-export function SubmitOffer({ className }: SubmitOfferProps) {
+export function SubmitOffer({ auctionId }: SubmitOfferProps) {
+  const [dialogOpen, setDialogOpen] = useState(false)
+
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button variant="secondary">
           <span className="flex items-center gap-2">
@@ -29,7 +34,7 @@ export function SubmitOffer({ className }: SubmitOfferProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl">Submit your offer</DialogTitle>
-          <SubmitOfferForm />
+          <SubmitOfferForm auctionId={auctionId} onSuccess={() => setDialogOpen(false)} />
         </DialogHeader>
       </DialogContent>
     </Dialog>
