@@ -99,17 +99,31 @@ export default class Methods {
 	*
 	* @param { (number | string | BN) } auctionId,
 	* @param { (number | string | BN) } offerId,
-	* @param { boolean } completed,
 	*/
 	"confirmJobDelivery" (
 		auctionId: (number | string | BN),
 		offerId: (number | string | BN),
-		completed: boolean,
 		__options ? : GasLimit,
 	){
 		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "confirmJobDelivery", (events: EventRecord) => {
 			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
-		}, [auctionId, offerId, completed], __options);
+		}, [auctionId, offerId], __options);
+	}
+
+	/**
+	* rejectJobDelivery
+	*
+	* @param { (number | string | BN) } auctionId,
+	* @param { (number | string | BN) } offerId,
+	*/
+	"rejectJobDelivery" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "rejectJobDelivery", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
+		}, [auctionId, offerId], __options);
 	}
 
 	/**

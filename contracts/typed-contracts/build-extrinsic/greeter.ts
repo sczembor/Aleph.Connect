@@ -83,15 +83,27 @@ export default class Methods {
 	 *
 	 * @param { (number | string | BN) } auctionId,
 	 * @param { (number | string | BN) } offerId,
-	 * @param { boolean } completed,
 	*/
 	"confirmJobDelivery" (
 		auctionId: (number | string | BN),
 		offerId: (number | string | BN),
-		completed: boolean,
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "confirmJobDelivery", [auctionId, offerId, completed], __options);
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "confirmJobDelivery", [auctionId, offerId], __options);
+	}
+
+	/**
+	 * rejectJobDelivery
+	 *
+	 * @param { (number | string | BN) } auctionId,
+	 * @param { (number | string | BN) } offerId,
+	*/
+	"rejectJobDelivery" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "rejectJobDelivery", [auctionId, offerId], __options);
 	}
 
 	/**

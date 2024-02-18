@@ -96,16 +96,29 @@ export default class Methods {
 	*
 	* @param { (number | string | BN) } auctionId,
 	* @param { (number | string | BN) } offerId,
-	* @param { boolean } completed,
 	* @returns { Result<Result<null, ReturnTypes.Error>, ReturnTypes.LangError> }
 	*/
 	"confirmJobDelivery" (
 		auctionId: (number | string | BN),
 		offerId: (number | string | BN),
-		completed: boolean,
 		__options ? : GasLimit,
 	): Promise< QueryReturnType< Result<Result<null, ReturnTypes.Error>, ReturnTypes.LangError> > >{
-		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "confirmJobDelivery", [auctionId, offerId, completed], __options , (result) => { return handleReturnType(result, getTypeDescription(12, DATA_TYPE_DESCRIPTIONS)); });
+		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "confirmJobDelivery", [auctionId, offerId], __options , (result) => { return handleReturnType(result, getTypeDescription(12, DATA_TYPE_DESCRIPTIONS)); });
+	}
+
+	/**
+	* rejectJobDelivery
+	*
+	* @param { (number | string | BN) } auctionId,
+	* @param { (number | string | BN) } offerId,
+	* @returns { Result<Result<null, ReturnTypes.Error>, ReturnTypes.LangError> }
+	*/
+	"rejectJobDelivery" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		__options ? : GasLimit,
+	): Promise< QueryReturnType< Result<Result<null, ReturnTypes.Error>, ReturnTypes.LangError> > >{
+		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "rejectJobDelivery", [auctionId, offerId], __options , (result) => { return handleReturnType(result, getTypeDescription(12, DATA_TYPE_DESCRIPTIONS)); });
 	}
 
 	/**

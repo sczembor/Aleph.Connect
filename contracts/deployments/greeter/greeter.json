@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0xd20f3970d183d663a3a01b3b13c1fe09af36162c0c69ee4ce6f0b9795ab7e199",
+    "hash": "0x71d99e12cbe9beaccc5fc0909e714c0643a68b180f372aea34d8ca0f650a3fe6",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.76.0",
     "build_info": {
@@ -358,15 +358,6 @@
               ],
               "type": 6
             }
-          },
-          {
-            "label": "completed",
-            "type": {
-              "displayName": [
-                "bool"
-              ],
-              "type": 3
-            }
           }
         ],
         "default": false,
@@ -382,6 +373,41 @@
           "type": 12
         },
         "selector": "0xbd2b9735"
+      },
+      {
+        "args": [
+          {
+            "label": "auction_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "offer_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "reject_job_delivery",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 12
+        },
+        "selector": "0xd2032daf"
       },
       {
         "args": [
@@ -1514,6 +1540,10 @@
               {
                 "index": 12,
                 "name": "AuctionNotInJobDeliveredState"
+              },
+              {
+                "index": 13,
+                "name": "AuctionNotInOProgressState"
               }
             ]
           }

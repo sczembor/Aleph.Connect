@@ -20,7 +20,8 @@ export enum Error {
 	offerNotAccepted = 'OfferNotAccepted',
 	auctionNotInOfferAcceptedState = 'AuctionNotInOfferAcceptedState',
 	offerNotAcceptedForAuction = 'OfferNotAcceptedForAuction',
-	auctionNotInJobDeliveredState = 'AuctionNotInJobDeliveredState'
+	auctionNotInJobDeliveredState = 'AuctionNotInJobDeliveredState',
+	auctionNotInOProgressState = 'AuctionNotInOProgressState'
 }
 
 export type AuctionView = {
