@@ -18,11 +18,14 @@ export interface AuctionDetailsProps extends AuctionView, PropsWithChildren {
   hrefPrefix?: string
 }
 
+const nextWeekDate = new Date()
+nextWeekDate.setDate(new Date().getDate() + 7)
+
 export function AuctionDetails({
   id,
   name,
   tags = [],
-  endDate = new Date(),
+  endDate = nextWeekDate,
   difficulty = 'MEDIUM',
   description,
   interactive = true,

@@ -17,7 +17,7 @@ export function useAuctions(...args: Parameters<Methods['reversedAuctions']>) {
   }
 
   const queryResult = useQuery({
-    queryKey: ['auctions'],
+    queryKey: ['auctions', args],
     queryFn: fetchAuctions,
     enabled: !!typedContract,
   })

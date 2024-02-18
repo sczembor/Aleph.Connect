@@ -7,7 +7,7 @@ export function useUserOffers() {
   const { isInitializing, isConnecting, activeAccount } = useInkathon()
   const { typedContract } = useRegisteredTypedContract(ContractIds.AConnect, GreeterContract)
 
-  const fetchAuctions = async () => {
+  const fetchUserOffers = async () => {
     if (typedContract && activeAccount) {
       const typedResult = await typedContract.query.userOffers(activeAccount?.address)
       return typedResult.value?.ok
@@ -17,7 +17,7 @@ export function useUserOffers() {
 
   const queryResult = useQuery({
     queryKey: ['offers', activeAccount?.address],
-    queryFn: fetchAuctions,
+    queryFn: fetchUserOffers,
     enabled: !!typedContract && !!activeAccount,
   })
 

@@ -8,7 +8,7 @@ export function useAuction(...args: Parameters<Methods['auction']>) {
   const { isInitializing, isConnecting } = useInkathon()
   const { typedContract } = useRegisteredTypedContract(ContractIds.AConnect, GreeterContract)
 
-  const fetchAuctions = async () => {
+  const fetchAuction = async () => {
     if (typedContract) {
       const typedResult = await typedContract.query.auction(...args)
       return typedResult.value?.ok
@@ -17,8 +17,8 @@ export function useAuction(...args: Parameters<Methods['auction']>) {
   }
 
   const queryResult = useQuery({
-    queryKey: ['auctions'],
-    queryFn: fetchAuctions,
+    queryKey: ['auctions', args],
+    queryFn: fetchAuction,
     enabled: !!typedContract,
   })
 

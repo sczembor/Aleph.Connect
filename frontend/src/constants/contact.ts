@@ -1,16 +1,16 @@
-export const CONTACT_DETAILS = [
-  {
-    id: '',
+export const CONTACT_DETAILS = {
+  '5FpumytfF6Z36cGH1mUKXZykmzmV4snWR7skFj9PW3BczTar': {
+    id: '5FpumytfF6Z36cGH1mUKXZykmzmV4snWR7skFj9PW3BczTar',
     name: 'tknura',
-    telegram: '',
-    linkedin: '',
-    github: '',
+    telegram: '@tknura',
+    linkedin: 'https://www.linkedin.com/in/tomasz-knura/',
+    github: 'https://github.com/tknura',
   },
-  {
-    id: '',
+  '5CAhEffQfSrFVGNPtgtNaBUYHPyM4dbCZ7PCABnRM9dt396A': {
+    id: '5CAhEffQfSrFVGNPtgtNaBUYHPyM4dbCZ7PCABnRM9dt396A',
     name: 'sczembor',
-    telegram: '',
-    linkedin: '',
-    github: '',
+    telegram: '@strachu',
+    linkedin: 'https://www.linkedin.com/in/stanislaw-czembor/',
+    github: 'https://github.com/sczembor',
   },
-]
+}

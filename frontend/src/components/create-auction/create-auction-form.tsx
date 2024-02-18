@@ -7,6 +7,7 @@ import { ContractIds } from '@/deployments/deployments'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useInkathon, useRegisteredContract } from '@scio-labs/use-inkathon'
 import { useQueryClient } from '@tanstack/react-query'
+import { Info } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import * as z from 'zod'
@@ -24,6 +25,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { contractTxWithToast } from '@/utils/contract-tx-with-toast'
 
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 interface CreateAuctionFormProps {
@@ -157,6 +159,11 @@ export function CreateAuctionForm({ onSuccess }: CreateAuctionFormProps) {
             </FormItem>
           )}
         />
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertTitle>Fee info</AlertTitle>
+          <AlertDescription>Creating an auction costs 2 TZERO</AlertDescription>
+        </Alert>
         <Button
           type="submit"
           className="bg-primary font-bold"

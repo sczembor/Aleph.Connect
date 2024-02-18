@@ -8,7 +8,7 @@ export function useAuctionOffers(...args: Parameters<Methods['auctionOffers']>) 
   const { isInitializing, isConnecting, activeAccount } = useInkathon()
   const { typedContract } = useRegisteredTypedContract(ContractIds.AConnect, GreeterContract)
 
-  const fetchAuctions = async () => {
+  const fetchAuctionOffers = async () => {
     if (typedContract && activeAccount) {
       const typedResult = await typedContract.query.auctionOffers(...args)
       return typedResult.value?.ok
@@ -17,8 +17,8 @@ export function useAuctionOffers(...args: Parameters<Methods['auctionOffers']>) 
   }
 
   const queryResult = useQuery({
-    queryKey: ['offers', activeAccount?.address],
-    queryFn: fetchAuctions,
+    queryKey: ['offers', activeAccount?.address, args],
+    queryFn: fetchAuctionOffers,
     enabled: !!typedContract && !!activeAccount,
   })
 

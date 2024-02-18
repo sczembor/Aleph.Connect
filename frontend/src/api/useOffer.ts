@@ -1,24 +1,25 @@
 import { ContractIds } from '@/deployments/deployments'
 import GreeterContract from '@inkathon/contracts/typed-contracts/contracts/greeter'
+import Methods from '@inkathon/contracts/typed-contracts/query/greeter'
 import { useInkathon, useRegisteredTypedContract } from '@scio-labs/use-inkathon'
 import { useQuery } from '@tanstack/react-query'
 
-export function useUserAuctions() {
-  const { isInitializing, isConnecting, activeAccount } = useInkathon()
+export function useOffer(...args: Parameters<Methods['offer']>) {
+  const { isInitializing, isConnecting } = useInkathon()
   const { typedContract } = useRegisteredTypedContract(ContractIds.AConnect, GreeterContract)
 
-  const fetchUserAuctions = async () => {
-    if (typedContract && activeAccount) {
-      const typedResult = await typedContract.query.userAuctions(activeAccount?.address)
+  const fetchOffer = async () => {
+    if (typedContract) {
+      const typedResult = await typedContract.query.offer(...args)
       return typedResult.value?.ok
     }
-    return []
+    return null
   }
 
   const queryResult = useQuery({
-    queryKey: ['auctions', activeAccount?.address],
-    queryFn: fetchUserAuctions,
-    enabled: !!typedContract && !!activeAccount,
+    queryKey: ['offers', args],
+    queryFn: fetchOffer,
+    enabled: !!typedContract,
   })
 
   return {
