@@ -53,6 +53,7 @@ export type OfferView = {
 	status: AuctionStatus,
 	acceptedAt: number | null,
 	startedAt: number | null,
-	deliveredAt: number | null
+	deliveredAt: number | null,
+	auctionId: number
 }
 

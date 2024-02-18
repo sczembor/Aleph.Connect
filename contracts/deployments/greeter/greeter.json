@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x6d6488d92c16f857d10b960e36f7b66fa2023a4d19333c29826b4a606bde1d9c",
+    "hash": "0xd20f3970d183d663a3a01b3b13c1fe09af36162c0c69ee4ce6f0b9795ab7e199",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.76.0",
     "build_info": {
@@ -1092,6 +1092,15 @@
                             }
                           },
                           "name": "delivered_at"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x0bd8a2d5",
+                              "ty": 6
+                            }
+                          },
+                          "name": "auction_id"
                         }
                       ],
                       "name": "Offer"
@@ -1846,6 +1855,11 @@
                 "name": "delivered_at",
                 "type": 20,
                 "typeName": "Option<u64>"
+              },
+              {
+                "name": "auction_id",
+                "type": 6,
+                "typeName": "u64"
               }
             ]
           }

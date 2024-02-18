@@ -92,6 +92,7 @@ mod amarketplace {
         accepted_at: Option<u64>,
         started_at: Option<u64>,
         delivered_at: Option<u64>,
+        auction_id: u64,
     }
 
     impl Offer {
@@ -106,6 +107,7 @@ mod amarketplace {
                 accepted_at: self.accepted_at,
                 started_at: self.started_at,
                 delivered_at: self.delivered_at,
+                auction_id: self.auction_id,
             }
         }
     }
@@ -125,6 +127,7 @@ mod amarketplace {
         accepted_at: Option<u64>,
         started_at: Option<u64>,
         delivered_at: Option<u64>,
+        auction_id: u64,
     }
 
     /// Errors that can occur upon calling this contract.
@@ -463,6 +466,7 @@ mod amarketplace {
                 accepted_at: None,
                 started_at: None,
                 delivered_at: None,
+                auction_id,
             };
 
             self.offers.insert(self.next_offer_id, &offer);
