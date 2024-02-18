@@ -7,7 +7,7 @@ import { env } from '@/config/environment'
  * DOCS: https://github.com/scio-labs/inkathon#2-custom-contracts
  */
 export enum ContractIds {
-  AConnect = '5EWDDCYGv1B9u5rxmejKvX1pupYkBSwLXXFJCAsgJjtGVLNB',
+  AConnect = '5EXFBWHcaC2XCZyW7oLWVvA8UUzkT7Qz4JNViMmf9KG6KCDg',
 }
 
 export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
@@ -25,6 +25,7 @@ export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
   //   }
   // }
 
+  //  Temporary fix as the abi are being wrongly inserted in greeter files
   const abi = await import(`@inkathon/contracts/deployments/greeter/greeter.json`)
 
   return [

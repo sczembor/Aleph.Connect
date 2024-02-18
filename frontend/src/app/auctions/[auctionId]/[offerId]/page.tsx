@@ -91,40 +91,44 @@ export default function JobDetails({
       ) : (
         <OfferListItem customHeader={isJobOwner ? 'Your offer' : undefined} {...offer} />
       )}
-      <Card>
-        {isJobOwner && (
-          <CardHeader className="gap-3">
-            <CardTitle className="flex flex-col gap-2">Your work</CardTitle>
-            <CardDescription>
-              {isJobDelivered
-                ? 'Your work has been delivered. It needs to be accepted by other side'
-                : isJobFinished
-                  ? 'Your work has been accepted by the user. Reward was send to your account. '
-                  : 'You can confirm that you submitted your work by clicking the button below '}
-            </CardDescription>
-            {!isJobDelivered && !isJobFinished && (
-              <Button onClick={handleJobDelivery}>Deliver job</Button>
-            )}
-          </CardHeader>
-        )}
-        {isAuctionOwner && (
-          <CardHeader className="gap-3">
-            <CardTitle className="flex flex-col gap-2">Work status</CardTitle>
-            <CardDescription>
-              {isJobDelivered
-                ? 'Work has been marked as delivered. Do you accept it?'
-                : 'Work was not delivered yet'}
-            </CardDescription>
-            {isJobDelivered && (
-              <div className="flex gap-4">
-                <Button className="w-full" onClick={handleAcceptJobDelivery}>
-                  Accept job delivery
-                </Button>
-              </div>
-            )}
-          </CardHeader>
-        )}
-      </Card>
+      {isActionLoading || isOfferLoading ? (
+        <Skeleton className="h-36 w-full" />
+      ) : (
+        <Card>
+          {isJobOwner && (
+            <CardHeader className="gap-3">
+              <CardTitle className="flex flex-col gap-2">Your work</CardTitle>
+              <CardDescription>
+                {isJobDelivered
+                  ? 'Your work has been delivered. It needs to be accepted by other side'
+                  : isJobFinished
+                    ? 'Your work has been accepted by the user. Reward was send to your account. '
+                    : 'You can confirm that you submitted your work by clicking the button below '}
+              </CardDescription>
+              {!isJobDelivered && !isJobFinished && (
+                <Button onClick={handleJobDelivery}>Deliver job</Button>
+              )}
+            </CardHeader>
+          )}
+          {isAuctionOwner && (
+            <CardHeader className="gap-3">
+              <CardTitle className="flex flex-col gap-2">Work status</CardTitle>
+              <CardDescription>
+                {isJobDelivered
+                  ? 'Work has been marked as delivered. Do you accept it?'
+                  : 'Work was not delivered yet'}
+              </CardDescription>
+              {isJobDelivered && (
+                <div className="flex gap-4">
+                  <Button className="w-full" onClick={handleAcceptJobDelivery}>
+                    Accept job delivery
+                  </Button>
+                </div>
+              )}
+            </CardHeader>
+          )}
+        </Card>
+      )}
     </div>
   )
 }

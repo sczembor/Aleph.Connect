@@ -12,6 +12,44 @@
 
 AlephConnect is a decentralized application (dApp) built on the AlephZero blockchain that empowers employers and freelancers to collaborate on projects in a secure, transparent, and efficient manner. It streamlines the process of finding skilled talent, negotiating terms, and ensuring trust throughout the work cycle.
 
+**How to run the app**
+
+The frontend works out of the box, without a local node running, as the sample contract is pre-deployed. Necessary deployment metadata and addresses are provided under `contracts/deployments/`.
+
+> **Pre-requisites:**
+>
+> - Setup Node.js v18+ (recommended via [nvm](https://github.com/nvm-sh/nvm) with `nvm install 18`)
+> - Install [pnpm](https://pnpm.io/installation) (recommended via [Node.js Corepack](https://nodejs.org/api/corepack.html) or `npm i -g pnpm`)
+> - Clone this repository
+
+<details>
+<summary><strong>Special Instructions for Windows Users</strong></summary>
+
+> [!IMPORTANT]  
+> Windows users must either use [WSL](https://learn.microsoft.com/windows/wsl/install) (recommended) or a custom shell like [Git Bash](https://git-scm.com/downloads). PowerShell is not supported.
+
+> **Pre-requisites when using WSL for Linux:**
+>
+> - Install [WSL](https://learn.microsoft.com/windows/wsl/install) and execute _all_ commands in the WSL terminal
+> - Setup Node.js v18+ (recommended via [nvm](https://github.com/nvm-sh/nvm) with `nvm install 18`)
+> - Install the following npm packages globally:
+> - `npm i -g npm`
+> - `npm i -g pnpm node-gyp make`
+> - Clone this repository into the WSL file system (e.g. `/home/<user>/inkathon`).
+>
+> **Tip:** You can enter `\\wsl$\` in the top bar of the Windows Explorer to access the WSL file system visually.
+
+</details>
+
+```bash
+# Install dependencies (once)
+# NOTE: This automatically creates an `.env.local` file
+pnpm install
+
+# Start Next.js frontend
+pnpm run dev
+```
+
 **Key Features:**
 
 - **Auction-based Project Posting:** Employers clearly define their project requirements and set a duration (10 days by default).
