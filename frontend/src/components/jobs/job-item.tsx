@@ -79,7 +79,7 @@ export function JobItem({
     >
       <CardHeader>
         <CardTitle className="flex flex-col gap-2 break-all">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
             {`Offer for ${auctionId}`}
             <Button variant="secondary" className="flex gap-x-2" onClick={redirectToAuction}>
               Go to auction details

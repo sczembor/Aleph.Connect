@@ -35,7 +35,7 @@ import {
 import { env } from '@/config/environment'
 import { truncateHash } from '@/utils/truncate-hash'
 
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 
 export interface ConnectButtonProps {}
 export const ConnectButton: FC<ConnectButtonProps> = () => {
@@ -213,12 +213,14 @@ export const ConnectButton: FC<ConnectButtonProps> = () => {
         <div className="flex min-w-[10rem] items-center justify-center gap-2 rounded-2xl border bg-gray-900 px-4 py-3 font-mono text-sm font-bold text-foreground">
           {reducibleBalanceFormatted}
           {(!reducibleBalance || reducibleBalance?.isZero()) && (
-            <Tooltip>
-              <TooltipTrigger className="cursor-help">
-                <AlertOctagon size={16} className="text-warning" />
-              </TooltipTrigger>
-              <TooltipContent>No balance to pay fees</TooltipContent>
-            </Tooltip>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="cursor-help">
+                  <AlertOctagon size={16} className="text-warning" />
+                </TooltipTrigger>
+                <TooltipContent>No balance to pay fees</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
       )}
