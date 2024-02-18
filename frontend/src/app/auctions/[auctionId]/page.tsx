@@ -31,7 +31,6 @@ export default function AuctionDetailsPage({
           <AuctionDetails {...auction} interactive={false}>
             <CardContent>
               <h4 className="mb-2 text-sm font-bold">Contact</h4>
-              {/* <ContactAuthor author={auction.author} /> */}
             </CardContent>
           </AuctionDetails>
         )
