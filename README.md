@@ -16,7 +16,7 @@ AlephConnect is a decentralized application (dApp) built on the AlephZero blockc
 
 The frontend works out of the box, without a local node running, as the sample contract is pre-deployed. Necessary deployment metadata and addresses are provided under `contracts/deployments/`.
 
-Current testnet contract address: *5EXFBWHcaC2XCZyW7oLWVvA8UUzkT7Qz4JNViMmf9KG6KCDg*
+Current testnet contract address: _5EXFBWHcaC2XCZyW7oLWVvA8UUzkT7Qz4JNViMmf9KG6KCDg_
 
 > **Pre-requisites:**
 >
@@ -76,6 +76,7 @@ pnpm run dev
 - **Security and Efficiency:** Blockchain technology guarantees the immutability of data and facilitates secure transactions.
 - **Flexibility and Cost-Effectiveness:** The decentralized nature removes intermediaries, reducing fees and enabling flexible collaboration models.
 - **Global Reach:** AlephConnect connects employers and freelancers worldwide, fostering a diverse and inclusive talent pool.
+  Please check our small case study: [Investor Relations](https://github.com/sczembor/Aleph.Connect/blob/main/AlephConnect%20Investor%20Relations.pdf)
 
 **Getting Started:**
 
