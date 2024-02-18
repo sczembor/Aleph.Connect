@@ -16,6 +16,8 @@ AlephConnect is a decentralized application (dApp) built on the AlephZero blockc
 
 The frontend works out of the box, without a local node running, as the sample contract is pre-deployed. Necessary deployment metadata and addresses are provided under `contracts/deployments/`.
 
+Current testnet contract address: *5EXFBWHcaC2XCZyW7oLWVvA8UUzkT7Qz4JNViMmf9KG6KCDg*
+
 > **Pre-requisites:**
 >
 > - Setup Node.js v18+ (recommended via [nvm](https://github.com/nvm-sh/nvm) with `nvm install 18`)
