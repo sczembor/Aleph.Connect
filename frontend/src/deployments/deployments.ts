@@ -7,7 +7,7 @@ import { env } from '@/config/environment'
  * DOCS: https://github.com/scio-labs/inkathon#2-custom-contracts
  */
 export enum ContractIds {
-  AConnect = '5GQuS8KNCoPy1kCUUVP383C5iZVXu91Ur8gncTMJTne94q7a',
+  AConnect = '5EWDDCYGv1B9u5rxmejKvX1pupYkBSwLXXFJCAsgJjtGVLNB',
 }
 
 export const getDeployments = async (): Promise<SubstrateDeployment[]> => {

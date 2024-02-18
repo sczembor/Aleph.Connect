@@ -22,12 +22,13 @@ const VARIANT = {
 
 interface AuctionStatusBadgeProps {
   status: AuctionStatus
+  customText?: string
 }
 
-export function AuctionStatusBadge({ status }: AuctionStatusBadgeProps) {
+export function AuctionStatusBadge({ status, customText }: AuctionStatusBadgeProps) {
   return (
     <Badge variant={VARIANT[status]} className="uppercase">
-      {STATUS_TEXT[status]}
+      {customText || STATUS_TEXT[status]}
     </Badge>
   )
 }

@@ -18,8 +18,6 @@ export default function Auctions() {
   const { data, isLoading } = useAuctions(10, 10)
   const items = data || []
 
-  console.log(items)
-
   return (
     <>
       <div className="flex flex-col gap-4">

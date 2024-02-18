@@ -2,56 +2,46 @@
 
 import { useRouter } from 'next/navigation'
 
-import { CONTACT_DETAILS } from '@/constants/contact'
 import { TZERO_MULTIPLIER } from '@/constants/tzero-multiplier'
 import { ContractIds } from '@/deployments/deployments'
 import {
-  AccountId,
   AuctionStatus,
   OfferView,
 } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
 import { useInkathon, useRegisteredContract } from '@scio-labs/use-inkathon'
 import { useQueryClient } from '@tanstack/react-query'
-import { HandCoins, Info, Timer } from 'lucide-react'
+import { ArrowRight, HandCoins, Timer } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-import { cn } from '@/utils/cn'
 import { contractTxWithToast } from '@/utils/contract-tx-with-toast'
 
 import { AcceptDenyFooter } from '../accept-deny-footer/accept-deny-footer'
 import { AuctionStatusBadge } from '../auction/auction-status-badge'
 import { Parameter } from '../parameter/parameter'
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert'
+import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
-interface OfferListItemProps extends OfferView {
-  auctionAuthor?: AccountId
+interface JobItemProps extends OfferView {
   className?: string
   customHeader?: string
-  linkActive?: boolean
+  interactive?: boolean
 }
 
-export function OfferListItem({
+export function JobItem({
   id,
-  className,
   duration,
-  author,
-  auctionAuthor = '',
   description,
   reward,
   auctionId,
   status,
-  customHeader,
-  linkActive,
-}: OfferListItemProps) {
+  interactive,
+}: JobItemProps) {
   const { api, activeAccount, activeSigner } = useInkathon()
   const { contract } = useRegisteredContract(ContractIds.AConnect)
 
   const router = useRouter()
-  const queryClient = useQueryClient()
 
-  const isDenied = false
-  const isAuctionOwner = auctionAuthor === activeAccount?.address
+  const queryClient = useQueryClient()
 
   const handleAcceptOffer = async () => {
     if (!activeAccount || !contract || !activeSigner || !api) {
@@ -63,36 +53,46 @@ export function OfferListItem({
         api,
         activeAccount.address,
         contract,
-        'acceptOffer',
-        { value: +reward },
+        'acceptJob',
+        { value: 1 * TZERO_MULTIPLIER },
         [auctionId, id],
       )
-      await queryClient.invalidateQueries({ queryKey: ['offers'] })
+      await queryClient.invalidateQueries({ queryKey: ['offers', activeAccount.address] })
     } catch (err) {
       console.warn(err)
     }
   }
   const handleDenyOffer = () => {}
 
-  const redirectToJob = () => {
+  const redirectToAuction = () => {
+    router.push(`/auctions/${auctionId}`)
+  }
+
+  const redirectToJobDetails = () => {
     router.push(`/auctions/${auctionId}/${id}`)
   }
 
   return (
     <Card
-      className={cn(
-        isDenied ? '!text-muted-foreground' : undefined,
-        linkActive ? 'hover:cursor-pointer hover:bg-gray-200/5' : undefined,
-        className,
-      )}
-      onClick={linkActive ? redirectToJob : undefined}
+      className={interactive ? 'hover:cursor-pointer hover:bg-gray-200/5' : undefined}
+      onClick={interactive ? redirectToJobDetails : undefined}
     >
       <CardHeader>
         <CardTitle className="flex flex-col gap-2 break-all">
-          {/* temporary contact mock */}
-          {customHeader || `${CONTACT_DETAILS[author]?.name || author}'s offer`}
+          <div className="flex items-center justify-between">
+            {`Offer for ${auctionId}`}
+            <Button variant="secondary" className="flex gap-x-2" onClick={redirectToAuction}>
+              Go to auction details
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
           <div>
-            <AuctionStatusBadge status={status} />
+            <AuctionStatusBadge
+              status={status}
+              customText={
+                status === AuctionStatus.offerAccepted ? 'Waiting for your acceptance' : undefined
+              }
+            />
           </div>
         </CardTitle>
         <div className="text-sm">
@@ -107,20 +107,8 @@ export function OfferListItem({
       <CardContent>
         <p className="text-sm text-muted-foreground">{description}</p>
       </CardContent>
-      {isAuctionOwner && status === AuctionStatus.inProgress && (
-        <>
-          <div className="mb-4 px-6">
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertTitle>Caution</AlertTitle>
-              <AlertDescription>
-                By accepting the offer you will be charged with reward. If the other side
-                doesn&apos;t accept the offer you will be able to reclaim it later
-              </AlertDescription>
-            </Alert>
-          </div>
-          <AcceptDenyFooter onAccept={handleAcceptOffer} onDeny={handleDenyOffer} />
-        </>
+      {status === AuctionStatus.offerAccepted && (
+        <AcceptDenyFooter onAccept={handleAcceptOffer} onDeny={handleDenyOffer} />
       )}
     </Card>
   )

@@ -2,6 +2,7 @@
 
 import { useAuction } from '@/api/useAuction'
 import { useAuctionOffers } from '@/api/useAuctionOffers'
+import { AuctionStatus } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
 
 import { AuctionDetails } from '@/components/auction/auction-details'
 import { OfferListItem } from '@/components/offers/offer-list-item'
@@ -19,7 +20,7 @@ export default function AuctionDetailsPage({
 }) {
   const { data: auction, isLoading: isActionLoading } = useAuction(auctionId)
   const { data: offers, isLoading: isOffersLoading } = useAuctionOffers(auctionId)
-
+  console.log(auction)
   return (
     <div className="flex flex-col gap-4">
       {isActionLoading ? (
@@ -54,8 +55,11 @@ export default function AuctionDetailsPage({
                 <OfferListItem
                   key={offer.id}
                   auctionAuthor={auction?.author || ''}
-                  auctionId={auctionId}
-                  authorName={offer.author || ''}
+                  linkActive={[
+                    AuctionStatus.jobAccepted,
+                    AuctionStatus.jobDelivered,
+                    AuctionStatus.finalized,
+                  ].includes(offer.status)}
                   {...offer}
                 />
               ))}

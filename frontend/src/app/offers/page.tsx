@@ -3,23 +3,8 @@
 import { useUserOffers } from '@/api/useUserOffers'
 import { AuctionStatus } from '@inkathon/contracts/typed-contracts/types-arguments/greeter'
 
-import { AcceptDenyFooter } from '@/components/accept-deny-footer/accept-deny-footer'
-import { AuctionDetails } from '@/components/auction/auction-details'
+import { JobItem } from '@/components/jobs/job-item'
 import { Skeleton } from '@/components/ui/skeleton'
-
-import { MarketplaceListItemType } from '../auctions/page'
-
-const items: MarketplaceListItemType[] = [
-  {
-    id: '1',
-    name: 'Azero Marketplace UI+UX ',
-    tags: ['UI/UX', 'Frontend', 'Development', 'Programming'],
-    endDate: new Date(2024, 2, 19),
-    difficulty: 'HARD',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.',
-  },
-]
 
 const jobStatuses = [AuctionStatus.jobAccepted, AuctionStatus.jobDelivered, AuctionStatus.finalized]
 
@@ -28,9 +13,6 @@ export default function Offers() {
 
   const jobs = data?.filter((offer) => jobStatuses.includes(offer.status)) || []
   const offersToAccept = data?.filter((offer) => !jobStatuses.includes(offer.status)) || []
-
-  const handleAcceptJob = () => {}
-  const handleDenyJob = () => {}
 
   return (
     <>
@@ -51,9 +33,7 @@ export default function Offers() {
                   <p className="w-full  text-muted-foreground">No jobs waiting for acceptance</p>
                 )}
                 {offersToAccept.map((item) => (
-                  <AuctionDetails key={item.name} {...item} interactive={false}>
-                    <AcceptDenyFooter onAccept={handleAcceptJob} onDeny={handleDenyJob} />
-                  </AuctionDetails>
+                  <JobItem key={item.id} {...item} />
                 ))}
               </>
             )}
@@ -79,7 +59,7 @@ export default function Offers() {
                   </p>
                 )}
                 {jobs.map((item) => (
-                  <AuctionDetails key={item.name} {...item} hrefPrefix="jobs" />
+                  <JobItem key={item.id} {...item} interactive />
                 ))}
               </>
             )}
