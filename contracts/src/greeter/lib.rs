@@ -147,6 +147,7 @@ mod amarketplace {
         AuctionNotInOfferAcceptedState,
         OfferNotAcceptedForAuction,
         AuctionNotInJobDeliveredState,
+        AuctionNotInOProgressState,
     }
 
     /// Type alias for the contract's `Result` type.
@@ -282,6 +283,10 @@ mod amarketplace {
                         return Err(Error::AuctionExpired);
                     }
 
+                    if auction.accepted_offer.is_some() {
+                        return Err(Error::AuctionNotInOProgressState);
+                    }
+
                     if !self.offers.contains(offer_id) {
                         return Err(Error::OfferNotFound);
                     }
@@ -392,12 +397,7 @@ mod amarketplace {
         }
 
         #[ink(message)]
-        pub fn confirm_job_delivery(
-            &mut self,
-            auction_id: u64,
-            offer_id: u64,
-            completed: bool,
-        ) -> Result<()> {
+        pub fn confirm_job_delivery(&mut self, auction_id: u64, offer_id: u64) -> Result<()> {
             let caller = self.env().caller();
             let now = self.env().block_timestamp();
 
@@ -429,6 +429,39 @@ mod amarketplace {
             self.env()
                 .transfer(offer.author, offer.reward)
                 .map_err(|_| Error::TransferFailed)?;
+
+            Ok(())
+        }
+
+        #[ink(message)]
+        pub fn reject_job_delivery(&mut self, auction_id: u64, offer_id: u64) -> Result<()> {
+            let caller = self.env().caller();
+            let now = self.env().block_timestamp();
+
+            let mut offer = self.offers.get(offer_id).ok_or(Error::OfferNotFound)?;
+            let mut auction = self
+                .auctions
+                .get(auction_id)
+                .ok_or(Error::AuctionNotFound)?;
+
+            if auction.author != caller {
+                return Err(Error::NotAuthorOfAuction);
+            }
+
+            if auction.status != AuctionStatus::JobDelivered {
+                return Err(Error::AuctionNotInJobDeliveredState);
+            }
+
+            if auction.accepted_offer != Some(offer_id) {
+                return Err(Error::OfferNotAcceptedForAuction);
+            }
+
+            auction.status = AuctionStatus::Conflict;
+            offer.status = AuctionStatus::Conflict;
+            offer.delivered_at = Some(now);
+
+            self.auctions.insert(auction_id, &auction);
+            self.offers.insert(offer_id, &offer);
 
             Ok(())
         }
