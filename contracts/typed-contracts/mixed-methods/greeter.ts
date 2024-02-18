@@ -163,6 +163,25 @@ export default class Methods {
 	}
 
 	/**
+	* resolveConflict
+	*
+	* @param { (number | string | BN) } auctionId,
+	* @param { (number | string | BN) } offerId,
+	* @param { (number | string | BN) } resolution,
+	* @returns { void }
+	*/
+	"resolveConflict" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		resolution: (number | string | BN),
+		__options: GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "resolveConflict", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
+		}, [auctionId, offerId, resolution], __options);
+	}
+
+	/**
 	* admin
 	*
 	* @returns { Result<ReturnTypes.AccountId, ReturnTypes.LangError> }
@@ -278,6 +297,17 @@ export default class Methods {
 	}
 
 	/**
+	* balance
+	*
+	* @returns { Result<ReturnNumber, ReturnTypes.LangError> }
+	*/
+	"balance" (
+		__options: GasLimit,
+	): Promise< QueryReturnType< Result<ReturnNumber, ReturnTypes.LangError> > >{
+		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "balance", [], __options, (result) => { return handleReturnType(result, getTypeDescription(24, DATA_TYPE_DESCRIPTIONS)); });
+	}
+
+	/**
 	* setAdmin
 	*
 	* @param { ArgumentTypes.AccountId } newAdmin,
@@ -290,17 +320,6 @@ export default class Methods {
 		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "setAdmin", (events: EventRecord) => {
 			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
 		}, [newAdmin], __options);
-	}
-
-	/**
-	* balance
-	*
-	* @returns { Result<ReturnNumber, ReturnTypes.LangError> }
-	*/
-	"balance" (
-		__options: GasLimit,
-	): Promise< QueryReturnType< Result<ReturnNumber, ReturnTypes.LangError> > >{
-		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "balance", [], __options, (result) => { return handleReturnType(result, getTypeDescription(24, DATA_TYPE_DESCRIPTIONS)); });
 	}
 
 }

@@ -1,19 +1,11 @@
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 
-const ONE_HOUR: u64 = 3_600_000;
-
 #[ink::contract]
 mod amarketplace {
 
     use ink::prelude::string::String;
     use ink::prelude::vec::Vec;
     use ink::storage::Mapping;
-
-    #[ink(event)]
-    pub struct RandomEvent {
-        from: Option<AccountId>,
-        message: String,
-    }
 
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
     #[cfg_attr(
@@ -188,7 +180,6 @@ mod amarketplace {
     }
 
     impl AMarketplace {
-        /// Creates a new greeter contract initialized with the given value.
         #[ink(constructor)]
         pub fn new(
             admin: AccountId,
@@ -218,7 +209,6 @@ mod amarketplace {
             }
         }
 
-        /// Creates a new greeter contract initialized to 'Hello ink!'.
         #[ink(constructor)]
         pub fn default() -> Self {
             let admin: AccountId = [0u8; 32].into();
@@ -232,6 +222,10 @@ mod amarketplace {
                 6000_000,
             )
         }
+
+        /**********
+         * TRANSACTIONS
+         **********/
 
         #[ink(message, payable)]
         pub fn create_auction(
@@ -518,6 +512,21 @@ mod amarketplace {
             Ok(())
         }
 
+        #[ink(message)]
+        pub fn resolve_conflict(
+            &mut self,
+            auction_id: u64,
+            offer_id: u64,
+            resolution: u64,
+        ) -> Result<()> {
+            self.assert_mediator();
+            unimplemented!();
+        }
+
+        /**********
+         * QUERIES
+         **********/
+
         /// Returns the admin address.
         #[ink(message)]
         pub fn admin(&self) -> AccountId {
@@ -617,13 +626,30 @@ mod amarketplace {
             self.mediator
         }
 
+        #[ink(message)]
+        pub fn balance(&self) -> Balance {
+            self.env().balance()
+        }
+
+        /**********
+         * INTERNAL
+         **********/
+
         fn assert_admin(&self) {
             assert_eq!(self.admin, Self::env().caller(), "not an admin")
+        }
+
+        fn assert_mediator(&self) {
+            assert_eq!(self.mediator, Self::env().caller(), "not a mediator")
         }
 
         fn assert_not_paused(&self) {
             assert!(!self.is_paused, "contract is paused");
         }
+
+        /**********
+         * ADMIN
+         **********/
 
         /// Sets new admin.
         /// Panics if caller not admin
@@ -634,11 +660,6 @@ mod amarketplace {
             self.admin = new_admin;
         }
 
-        #[ink(message)]
-        pub fn balance(&self) -> Balance {
-            self.env().balance()
-        }
-
         pub fn pause(&mut self) {
             self.assert_admin();
             self.is_paused = true;
@@ -647,30 +668,20 @@ mod amarketplace {
 
     #[cfg(test)]
     mod tests {
-        use std::thread::AccessError;
-
         use super::*;
 
         use ink::{
-            env::test::{
-                default_accounts, get_account_balance, recorded_events, DefaultAccounts,
-                EmittedEvent,
-            },
+            env::test::{default_accounts, DefaultAccounts},
             primitives::AccountId,
         };
-        use scale::Decode;
 
         const AZERO: Balance = 1_000_000_000_000;
         const ONE_HOUR: u64 = 3_600_000;
 
-        // Returns accounts that are pre-seeded in the test database.
-        // We can use them as authors for transactions.
         fn get_default_test_accounts() -> DefaultAccounts<ink::env::DefaultEnvironment> {
             default_accounts::<ink::env::DefaultEnvironment>()
         }
 
-        // Sets caller returned by the next `Self::env().caller()` method call
-        // in the contract.
         fn set_caller(caller: AccountId) {
             ink::env::test::set_caller::<ink::env::DefaultEnvironment>(caller);
         }
@@ -732,7 +743,7 @@ mod amarketplace {
 
             println!("balance: {:?}", contract.balance());
 
-            contract.create_auction(
+            let _ = contract.create_auction(
                 "test name".to_string(),
                 "test description".to_string(),
                 vec!["test tag".to_string()],
@@ -745,7 +756,7 @@ mod amarketplace {
             assert_eq!(user_auctions[0].tags, vec!["test tag"]);
 
             set_caller(django);
-            contract.create_offer("test description".to_string(), ONE_HOUR, 200 * AZERO, 1);
+            let _ = contract.create_offer("test description".to_string(), ONE_HOUR, 200 * AZERO, 1);
 
             let user_offers = contract.user_offers(django);
             assert_eq!(user_offers.len(), 1);
@@ -755,8 +766,8 @@ mod amarketplace {
 
             println!("balance: {:?}", contract.balance());
             set_caller(frank);
-            ink::env::pay_with_call!(contract.accept_offer(1, 1), 200 * AZERO);
-            contract.accept_offer(1, 1);
+            let _ = ink::env::pay_with_call!(contract.accept_offer(1, 1), 200 * AZERO);
+            let _ = contract.accept_offer(1, 1);
             let user_auctions = contract.user_auctions(frank);
             assert_eq!(user_auctions.len(), 1);
             assert_eq!(user_auctions[0].name, "test name");
@@ -769,25 +780,23 @@ mod amarketplace {
 
             set_caller(django);
             set_deposit(15 * AZERO);
-            ink::env::pay_with_call!(contract.accept_job(1, 1), 15 * AZERO);
+            let _ = ink::env::pay_with_call!(contract.accept_job(1, 1), 15 * AZERO);
             let user_auctions = contract.user_auctions(frank);
             assert_eq!(user_auctions[0].status, AuctionStatus::JobAccepted);
             let user_offers = contract.user_offers(django);
             assert_eq!(user_offers[0].status, AuctionStatus::JobAccepted);
 
-            contract.deliver_job(1, 1);
+            let _ = contract.deliver_job(1, 1);
             let user_auctions = contract.user_auctions(frank);
             assert_eq!(user_auctions[0].status, AuctionStatus::JobDelivered);
 
             println!("before acceptance balance: {:?}", contract.balance());
             set_caller(frank);
-            contract.confirm_job_delivery(1, 1, true);
+            let _ = contract.confirm_job_delivery(1, 1);
             println!("after acceptance balance: {:?}", contract.balance());
 
             let user_auctions = contract.user_auctions(frank);
             assert_eq!(user_auctions[0].status, AuctionStatus::Finalized);
         }
-
-        //TODO add full flow test
     }
 }

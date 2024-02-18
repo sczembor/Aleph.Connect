@@ -147,6 +147,24 @@ export default class Methods {
 	}
 
 	/**
+	* resolveConflict
+	*
+	* @param { (number | string | BN) } auctionId,
+	* @param { (number | string | BN) } offerId,
+	* @param { (number | string | BN) } resolution,
+	*/
+	"resolveConflict" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		resolution: (number | string | BN),
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "resolveConflict", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
+		}, [auctionId, offerId, resolution], __options);
+	}
+
+	/**
 	* admin
 	*
 	*/
@@ -271,6 +289,18 @@ export default class Methods {
 	}
 
 	/**
+	* balance
+	*
+	*/
+	"balance" (
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "balance", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
+		}, [], __options);
+	}
+
+	/**
 	* setAdmin
 	*
 	* @param { ArgumentTypes.AccountId } newAdmin,
@@ -282,18 +312,6 @@ export default class Methods {
 		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "setAdmin", (events: EventRecord) => {
 			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
 		}, [newAdmin], __options);
-	}
-
-	/**
-	* balance
-	*
-	*/
-	"balance" (
-		__options ? : GasLimit,
-	){
-		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "balance", (events: EventRecord) => {
-			return decodeEvents(events, this.__nativeContract, EVENT_DATA_TYPE_DESCRIPTIONS);
-		}, [], __options);
 	}
 
 }

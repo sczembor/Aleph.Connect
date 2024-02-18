@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x71d99e12cbe9beaccc5fc0909e714c0643a68b180f372aea34d8ca0f650a3fe6",
+    "hash": "0x7cbc5d017617ef1499e6c5c80f329cb06abbde987d27fe37575aecd7cf01b997",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.76.0",
     "build_info": {
@@ -80,9 +80,7 @@
           }
         ],
         "default": false,
-        "docs": [
-          "Creates a new greeter contract initialized with the given value."
-        ],
+        "docs": [],
         "label": "new",
         "payable": false,
         "returnType": {
@@ -97,9 +95,7 @@
       {
         "args": [],
         "default": false,
-        "docs": [
-          "Creates a new greeter contract initialized to 'Hello ink!'."
-        ],
+        "docs": [],
         "label": "default",
         "payable": false,
         "returnType": {
@@ -130,19 +126,19 @@
         "displayName": [
           "BlockNumber"
         ],
-        "type": 31
+        "type": 30
       },
       "chainExtension": {
         "displayName": [
           "ChainExtension"
         ],
-        "type": 32
+        "type": 31
       },
       "hash": {
         "displayName": [
           "Hash"
         ],
-        "type": 30
+        "type": 29
       },
       "maxEventTopics": 4,
       "timestamp": {
@@ -152,36 +148,7 @@
         "type": 6
       }
     },
-    "events": [
-      {
-        "args": [
-          {
-            "docs": [],
-            "indexed": false,
-            "label": "from",
-            "type": {
-              "displayName": [
-                "Option"
-              ],
-              "type": 29
-            }
-          },
-          {
-            "docs": [],
-            "indexed": false,
-            "label": "message",
-            "type": {
-              "displayName": [
-                "String"
-              ],
-              "type": 7
-            }
-          }
-        ],
-        "docs": [],
-        "label": "RandomEvent"
-      }
-    ],
+    "events": [],
     "lang_error": {
       "displayName": [
         "ink",
@@ -463,6 +430,50 @@
         "selector": "0x7f170b70"
       },
       {
+        "args": [
+          {
+            "label": "auction_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "offer_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          },
+          {
+            "label": "resolution",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "default": false,
+        "docs": [],
+        "label": "resolve_conflict",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 12
+        },
+        "selector": "0xc7072d5d"
+      },
+      {
         "args": [],
         "default": false,
         "docs": [
@@ -688,6 +699,22 @@
         "selector": "0xc78a6b9a"
       },
       {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "balance",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 24
+        },
+        "selector": "0xb48c1684"
+      },
+      {
         "args": [
           {
             "label": "new_admin",
@@ -715,22 +742,6 @@
           "type": 9
         },
         "selector": "0x798dcad5"
-      },
-      {
-        "args": [],
-        "default": false,
-        "docs": [],
-        "label": "balance",
-        "mutates": false,
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 24
-        },
-        "selector": "0xb48c1684"
       }
     ]
   },
@@ -2097,39 +2108,6 @@
       "id": 29,
       "type": {
         "def": {
-          "variant": {
-            "variants": [
-              {
-                "index": 0,
-                "name": "None"
-              },
-              {
-                "fields": [
-                  {
-                    "type": 0
-                  }
-                ],
-                "index": 1,
-                "name": "Some"
-              }
-            ]
-          }
-        },
-        "params": [
-          {
-            "name": "T",
-            "type": 0
-          }
-        ],
-        "path": [
-          "Option"
-        ]
-      }
-    },
-    {
-      "id": 30,
-      "type": {
-        "def": {
           "composite": {
             "fields": [
               {
@@ -2147,7 +2125,7 @@
       }
     },
     {
-      "id": 31,
+      "id": 30,
       "type": {
         "def": {
           "primitive": "u32"
@@ -2155,7 +2133,7 @@
       }
     },
     {
-      "id": 32,
+      "id": 31,
       "type": {
         "def": {
           "variant": {}

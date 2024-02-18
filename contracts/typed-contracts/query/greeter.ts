@@ -141,6 +141,23 @@ export default class Methods {
 	}
 
 	/**
+	* resolveConflict
+	*
+	* @param { (number | string | BN) } auctionId,
+	* @param { (number | string | BN) } offerId,
+	* @param { (number | string | BN) } resolution,
+	* @returns { Result<Result<null, ReturnTypes.Error>, ReturnTypes.LangError> }
+	*/
+	"resolveConflict" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		resolution: (number | string | BN),
+		__options ? : GasLimit,
+	): Promise< QueryReturnType< Result<Result<null, ReturnTypes.Error>, ReturnTypes.LangError> > >{
+		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "resolveConflict", [auctionId, offerId, resolution], __options , (result) => { return handleReturnType(result, getTypeDescription(12, DATA_TYPE_DESCRIPTIONS)); });
+	}
+
+	/**
 	* admin
 	*
 	* @returns { Result<ReturnTypes.AccountId, ReturnTypes.LangError> }
@@ -256,6 +273,17 @@ export default class Methods {
 	}
 
 	/**
+	* balance
+	*
+	* @returns { Result<ReturnNumber, ReturnTypes.LangError> }
+	*/
+	"balance" (
+		__options ? : GasLimit,
+	): Promise< QueryReturnType< Result<ReturnNumber, ReturnTypes.LangError> > >{
+		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "balance", [], __options , (result) => { return handleReturnType(result, getTypeDescription(24, DATA_TYPE_DESCRIPTIONS)); });
+	}
+
+	/**
 	* setAdmin
 	*
 	* @param { ArgumentTypes.AccountId } newAdmin,
@@ -266,17 +294,6 @@ export default class Methods {
 		__options ? : GasLimit,
 	): Promise< QueryReturnType< Result<null, ReturnTypes.LangError> > >{
 		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "setAdmin", [newAdmin], __options , (result) => { return handleReturnType(result, getTypeDescription(9, DATA_TYPE_DESCRIPTIONS)); });
-	}
-
-	/**
-	* balance
-	*
-	* @returns { Result<ReturnNumber, ReturnTypes.LangError> }
-	*/
-	"balance" (
-		__options ? : GasLimit,
-	): Promise< QueryReturnType< Result<ReturnNumber, ReturnTypes.LangError> > >{
-		return queryOkJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "balance", [], __options , (result) => { return handleReturnType(result, getTypeDescription(24, DATA_TYPE_DESCRIPTIONS)); });
 	}
 
 }

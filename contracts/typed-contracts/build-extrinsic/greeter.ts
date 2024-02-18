@@ -125,6 +125,22 @@ export default class Methods {
 	}
 
 	/**
+	 * resolveConflict
+	 *
+	 * @param { (number | string | BN) } auctionId,
+	 * @param { (number | string | BN) } offerId,
+	 * @param { (number | string | BN) } resolution,
+	*/
+	"resolveConflict" (
+		auctionId: (number | string | BN),
+		offerId: (number | string | BN),
+		resolution: (number | string | BN),
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "resolveConflict", [auctionId, offerId, resolution], __options);
+	}
+
+	/**
 	 * admin
 	 *
 	*/
@@ -231,6 +247,16 @@ export default class Methods {
 	}
 
 	/**
+	 * balance
+	 *
+	*/
+	"balance" (
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "balance", [], __options);
+	}
+
+	/**
 	 * setAdmin
 	 *
 	 * @param { ArgumentTypes.AccountId } newAdmin,
@@ -240,16 +266,6 @@ export default class Methods {
 		__options: GasLimit,
 	){
 		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "setAdmin", [newAdmin], __options);
-	}
-
-	/**
-	 * balance
-	 *
-	*/
-	"balance" (
-		__options: GasLimit,
-	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "balance", [], __options);
 	}
 
 }
