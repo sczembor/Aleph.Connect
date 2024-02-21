@@ -6,6 +6,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-000000?logo=typescript&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)
 
+
 ## AlephConnect: Connecting Employers and Freelancers Seamlessly
 
 **Project Overview:**
