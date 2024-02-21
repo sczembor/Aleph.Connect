@@ -87,7 +87,7 @@ pnpm run dev
 
 **Community and Support:**
 
-Comming soon
+Comming soon.
 
 **Roadmap:**
 
