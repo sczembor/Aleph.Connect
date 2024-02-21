@@ -87,8 +87,7 @@ pnpm run dev
 
 **Community and Support:**
 
-- Join the AlephConnect community forum for discussions, announcements, and support.
-- Refer to the AlephConnect documentation for detailed technical information and usage guides.
+Comming soon
 
 **Roadmap:**
 
