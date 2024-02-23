@@ -43,7 +43,7 @@ mod amarketplace {
     impl Auction {
         pub fn get_view(&self, id: u64) -> AuctionView {
             AuctionView {
-                id, // Assuming "id" field exists in Offer
+                id, 
                 author: self.author,
                 name: self.name.clone(),
                 description: self.description.clone(),
